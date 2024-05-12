@@ -1,4 +1,4 @@
-package mahjong.resorce;
+package mahjong.resource;
 
 public class png {
     
