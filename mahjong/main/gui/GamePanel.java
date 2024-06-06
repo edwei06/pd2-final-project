@@ -10,6 +10,10 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private static final int TILE_HEIGHT = 56;
     private static final int SMALL_TILE_WIDTH = 30;
     private static final int SMALL_TILE_HEIGHT = 42;
+    private static final int TABLE_WIDTH = 900;
+    private static final int TABLE_HEIGHT = 675;
+    private static final int TABLE_START_X_POS = 62;
+    private static final int TABLE_START_Y_POS = 46;
 
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
@@ -48,12 +52,12 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private void drawTable(Graphics g) {
         g.setColor(Color.BLACK);
         // 繪製牌桌邊框
-        g.drawRect(62, 46, 900, 675);
+        g.drawRect(TABLE_START_X_POS, TABLE_START_Y_POS, TABLE_WIDTH, TABLE_HEIGHT);
     }
 
     private void drawPlayerTiles(Graphics g) {
-        int x = 62 + 20 + SMALL_TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框線坐標讓20px
-        int y = 675 + 46 - TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框坐標扣畫tile高度
+        int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框線坐標讓20px
+        int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框坐標扣畫tile高度
 
         // 繪製玩家的手牌
         for (int i = 0; i < playerTiles.length; i++) {
@@ -68,28 +72,34 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private void drawOtherPlayersTiles(Graphics g) {
         // 繪製上方玩家的牌背
         for (int i = 0; i < 16; i++) {
-            drawTileBack(g, 900 - SMALL_TILE_HEIGHT - i * SMALL_TILE_WIDTH, 46, false, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTileBack(g, TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_HEIGHT - 20 - (i+1) * SMALL_TILE_WIDTH, TABLE_START_Y_POS, false, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
         // 繪製左側玩家的牌背
         for (int i = 0; i < 16; i++) {
-            drawTileBack(g, 62, 46 + SMALL_TILE_HEIGHT + i * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTileBack(g, TABLE_START_X_POS, TABLE_START_Y_POS + SMALL_TILE_HEIGHT + 20 + i * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
         // 繪製右側玩家的牌背
         for (int i = 0; i < 16; i++) {
-            drawTileBack(g, 900 - SMALL_TILE_HEIGHT, 900 - 46 - TILE_HEIGHT- i * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTileBack(g, TABLE_WIDTH + TABLE_START_X_POS - SMALL_TILE_HEIGHT, TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT - 20 - (i+1) * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
     }
 
     private void drawTileBack(Graphics g, int x, int y, boolean rotate, int width, int height) {
         Graphics2D g2d = (Graphics2D) g.create();
         if (rotate) {
-            g2d.rotate(Math.toRadians(90), x + width / 2, y + height / 2);  // 旋轉牌背
+            // g2d.rotate(Math.toRadians(90), x + width / 2, y + height / 2);  // 旋轉牌背
+            g2d.setColor(Color.GRAY);
+            g2d.fillRect(x, y, height, width);  // 繪製麻將牌背
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(x, y, height, width);  // 繪製牌背的邊框
+            g2d.dispose();
+        } else {
+            g2d.setColor(Color.GRAY);
+            g2d.fillRect(x, y, width, height);  // 繪製麻將牌背
+            g2d.setColor(Color.BLACK);
+            g2d.drawRect(x, y, width, height);  // 繪製牌背的邊框
+            g2d.dispose();
         }
-        g2d.setColor(Color.GRAY);
-        g2d.fillRect(x, y, width, height);  // 繪製麻將牌背
-        g2d.setColor(Color.BLACK);
-        g2d.drawRect(x, y, width, height);  // 繪製牌背的邊框
-        g2d.dispose();
     }
 
     private void drawTile(Graphics g, int x, int y, String tileText, int rotate, int width, int height) {
@@ -109,24 +119,24 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     private void drawEatenTiles(Graphics g) {
         // 繪製自己右側的吃牌
-        int x = 900 + 62 - TILE_WIDTH;  // 玩家右側的牌桌邊緣
-        int y = 662;
+        int x = TABLE_START_X_POS + TABLE_WIDTH - TILE_WIDTH;  // 玩家右側的牌桌邊緣
+        int y = TABLE_START_Y_POS + TABLE_HEIGHT - TILE_HEIGHT;
 
         for (int i = 0; i < eatenTiles.length; i++) {
             drawTile(g, x - i * TILE_WIDTH, y, eatenTiles[i], 0, TILE_WIDTH, TILE_HEIGHT);
         }
 
         // 繪製上方玩家的吃牌
-        x = 50;  // 上方玩家右側的牌桌邊緣
-        y = 50;
+        x = TABLE_START_X_POS;  // 上方玩家右側的牌桌邊緣
+        y = TABLE_START_Y_POS;
 
         for (int i = 0; i < eatenTiles.length; i++) {
             drawTile(g, x + i * SMALL_TILE_WIDTH, y, eatenTiles[i], 180, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
 
         // 繪製左側玩家的吃牌
-        x = 56;
-        y = 682;  // 左側玩家右側的牌桌邊緣
+        x = TABLE_START_X_POS;
+        y = TABLE_START_Y_POS + TABLE_HEIGHT;  // 左側玩家右側的牌桌邊緣
 
         for (int i = 0; i < eatenTiles.length; i++) {
             drawTile(g, x, y - i * SMALL_TILE_WIDTH, eatenTiles[i], 90, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
