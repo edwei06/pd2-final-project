@@ -18,11 +18,39 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
 
+    private JButton chiButton, pengButton, gangButton;
+
     public GamePanel() {
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // 深綠色背景模擬麻將桌
         addMouseListener(this);
         addMouseMotionListener(this);
+        initControlButtons();
+    }
+
+    private void initControlButtons() {
+        chiButton = new JButton("吃");
+        pengButton = new JButton("碰");
+        gangButton = new JButton("槓");
+
+        chiButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 120, 60, 30);
+        pengButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 80, 60, 30);
+        gangButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 40, 60, 30);
+
+        chiButton.setVisible(false);
+        pengButton.setVisible(false);
+        gangButton.setVisible(false);
+
+        add(chiButton);
+        add(pengButton);
+        add(gangButton);
+    }
+
+    public void showControlButtons() {
+        chiButton.setVisible(true);
+        pengButton.setVisible(true);
+        gangButton.setVisible(true);
+        repaint();
     }
 
     @Override
@@ -105,7 +133,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private void drawTile(Graphics g, int x, int y, String tileText, int rotate, int width, int height) {
         Graphics2D g2d = (Graphics2D) g.create();
         if (rotate != 0) {
-            g2d.rotate(Math.toRadians(rotate), x + width / 2, y + height / 2);  // 旋轉牌
+            g2d.rotate(Math.toRadians(rotate), x, y);  // 旋轉牌
         }
         g2d.setColor(Color.WHITE);
         g2d.fillRect(x, y, width, height);  // 繪製麻將牌
@@ -128,23 +156,23 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
         // 繪製上方玩家的吃牌
         x = TABLE_START_X_POS;  // 上方玩家右側的牌桌邊緣
-        y = TABLE_START_Y_POS;
+        y = TABLE_START_Y_POS + SMALL_TILE_HEIGHT;
 
         for (int i = 0; i < eatenTiles.length; i++) {
-            drawTile(g, x + i * SMALL_TILE_WIDTH, y, eatenTiles[i], 180, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTile(g, x + (i + 1) * SMALL_TILE_WIDTH, y, eatenTiles[i], 180, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
 
         // 繪製左側玩家的吃牌
-        x = TABLE_START_X_POS;
+        x = TABLE_START_X_POS + SMALL_TILE_HEIGHT;
         y = TABLE_START_Y_POS + TABLE_HEIGHT;  // 左側玩家右側的牌桌邊緣
 
         for (int i = 0; i < eatenTiles.length; i++) {
-            drawTile(g, x, y - i * SMALL_TILE_WIDTH, eatenTiles[i], 90, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTile(g, x, y - (i + 1) * SMALL_TILE_WIDTH, eatenTiles[i], 90, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
 
         // 繪製右側玩家的吃牌
-        x = 938;
-        y = 44;  // 右側玩家右側的牌桌邊緣
+        x = TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_HEIGHT; //
+        y = TABLE_START_Y_POS + SMALL_TILE_WIDTH;  // 右側玩家右側的牌桌邊緣
 
         for (int i = 0; i < eatenTiles.length; i++) {
             drawTile(g, x, y + i * SMALL_TILE_WIDTH, eatenTiles[i], 270, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
@@ -153,8 +181,8 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseClicked(MouseEvent e) {
-        int x = 102;
-        int y = 662;
+        int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
+        int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
         for (int i = 0; i < playerTiles.length; i++) {
             Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
             if (tileRect.contains(e.getPoint())) {
@@ -167,8 +195,8 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        int x = 102;
-        int y = 662;
+        int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
+        int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
         hoverTileIndex = -1;
         for (int i = 0; i < playerTiles.length; i++) {
             Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
