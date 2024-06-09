@@ -1,0 +1,20 @@
+MahjongGame
+│── src
+│   ├── main
+│   │   ├── java
+│   │   │   ├── com
+│   │   │   │   └── example
+│   │   │   │       ├── game
+│   │   │   │       │   ├── Game.java
+│   │   │   │       │   ├── GameState.java
+│   │   │   │       │   ├── Player.java
+│   │   │   │       │   ├── Tile.java
+│   │   │   │       │   ├── TileSet.java
+│   │   │   │       │   └── Move.java
+│   │   │   │       └── server
+│   │   │   │           ├── GameServer.java
+│   │   │   │           ├── WebSocketHandler.java
+│   │   │   │           └── DatabaseManager.java
+│   │   └── resources
+│   │       └── application.properties
+└── pom.xml
