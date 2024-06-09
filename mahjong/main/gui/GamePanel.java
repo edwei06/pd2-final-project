@@ -1,9 +1,13 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Random;
 import javax.swing.*;
 
 class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
-    private String[] playerTiles = {"1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"};
+    private List<String> playerTiles = new ArrayList<>(Arrays.asList("1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
     private String[] eatenTiles = {"1筒", "2筒", "3筒"}; // 示例吃牌
 
     private static final int TILE_WIDTH = 40;
@@ -20,6 +24,11 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     private JButton chiButton, pengButton, gangButton, huButton;
 
+    private List<String> discardedTiles; // 用于保存打出的牌
+    private List<String> rightPlayerDiscardedTiles;
+    private List<String> topPlayerDiscardedTiles;
+    private List<String> leftPlayerDiscardedTiles;
+
     public GamePanel() {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
@@ -27,6 +36,11 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         addMouseListener(this);
         addMouseMotionListener(this);
         initControlButtons();
+        discardedTiles = new ArrayList<>();
+        rightPlayerDiscardedTiles = new ArrayList<>();
+        topPlayerDiscardedTiles = new ArrayList<>();
+        leftPlayerDiscardedTiles = new ArrayList<>();
+        simulateDrawTile(); // 模拟游戏开始时抽一张牌
     }
 
     private void initControlButtons() {
@@ -39,7 +53,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         pengButton.setVisible(false);
         gangButton.setVisible(false);
         huButton.setVisible(false);
-        
+
         add(chiButton);
         add(pengButton);
         add(gangButton);
@@ -60,6 +74,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         huButton.setVisible(true);
         repaint();
     }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -70,6 +85,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         drawPlayerTiles(g);
         drawOtherPlayersTiles(g);
         drawEatenTiles(g);
+        drawDiscardedTiles(g);
     }
 
     private void drawGridLines(Graphics g) {
@@ -95,11 +111,11 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框坐標扣畫tile高度
 
         // 繪製玩家的手牌
-        for (int i = 0; i < playerTiles.length; i++) {
+        for (int i = 0; i < playerTiles.size(); i++) {
             if (i == hoverTileIndex || i == selectedTileIndex) {
-                drawTile(g, x + i * TILE_WIDTH, y - 20 , playerTiles[i], 0, TILE_WIDTH, TILE_HEIGHT);  // 向上移動的效果
+                drawTile(g, x + i * TILE_WIDTH, y - 20, playerTiles.get(i), 0, TILE_WIDTH, TILE_HEIGHT);  // 向上移動的效果
             } else {
-                drawTile(g, x + i * TILE_WIDTH, y, playerTiles[i], 0, TILE_WIDTH, TILE_HEIGHT);
+                drawTile(g, x + i * TILE_WIDTH, y, playerTiles.get(i), 0, TILE_WIDTH, TILE_HEIGHT);
             }
         }
     }
@@ -107,7 +123,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private void drawOtherPlayersTiles(Graphics g) {
         // 繪製上方玩家的牌背
         for (int i = 0; i < 16; i++) {
-            drawTileBack(g, TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_HEIGHT - 20 - (i+1) * SMALL_TILE_WIDTH, TABLE_START_Y_POS, false, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTileBack(g, TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_HEIGHT - 20 - (i + 1) * SMALL_TILE_WIDTH, TABLE_START_Y_POS, false, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
         // 繪製左側玩家的牌背
         for (int i = 0; i < 16; i++) {
@@ -115,21 +131,20 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         }
         // 繪製右側玩家的牌背
         for (int i = 0; i < 16; i++) {
-            drawTileBack(g, TABLE_WIDTH + TABLE_START_X_POS - SMALL_TILE_HEIGHT, TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT - 20 - (i+1) * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+            drawTileBack(g, TABLE_WIDTH + TABLE_START_X_POS - SMALL_TILE_HEIGHT, TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT - 20 - (i + 1) * SMALL_TILE_WIDTH, true, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
         }
     }
 
     private void drawTileBack(Graphics g, int x, int y, boolean rotate, int width, int height) {
         Graphics2D g2d = (Graphics2D) g.create();
         if (rotate) {
-            // g2d.rotate(Math.toRadians(90), x + width / 2, y + height / 2);  // 旋轉牌背
-            g2d.setColor(Color.GRAY);
+            g2d.setColor(Color.PINK);
             g2d.fillRect(x, y, height, width);  // 繪製麻將牌背
             g2d.setColor(Color.BLACK);
             g2d.drawRect(x, y, height, width);  // 繪製牌背的邊框
             g2d.dispose();
         } else {
-            g2d.setColor(Color.GRAY);
+            g2d.setColor(Color.PINK);
             g2d.fillRect(x, y, width, height);  // 繪製麻將牌背
             g2d.setColor(Color.BLACK);
             g2d.drawRect(x, y, width, height);  // 繪製牌背的邊框
@@ -186,18 +201,83 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         }
     }
 
+    private void drawDiscardedTiles(Graphics g) {
+        // 繪製自己打出的牌
+        int centerX = getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH;
+        int centerY = getHeight() / 2 - SMALL_TILE_HEIGHT / 2 + 50;
+        for (int i = 0; i < discardedTiles.size(); i++) {
+            drawTile(g, centerX + (i % 6) * SMALL_TILE_WIDTH, centerY + (i / 6) * SMALL_TILE_HEIGHT, discardedTiles.get(i), 0, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+
+        // 繪製左邊玩家打出的牌
+        centerX = getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH;
+        centerY = getHeight() / 2 - 50 - 2 * SMALL_TILE_HEIGHT;
+        for (int i = 0; i < discardedTiles.size(); i++) {
+            drawTile(g, centerX - (i / 6) * SMALL_TILE_HEIGHT, centerY + (i % 6) * SMALL_TILE_WIDTH, discardedTiles.get(i), 90, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+
+        // 繪製上方玩家打出的牌
+        centerX = TABLE_START_X_POS + TABLE_WIDTH / 2 - SMALL_TILE_WIDTH / 2;
+        centerY = TABLE_START_Y_POS + SMALL_TILE_HEIGHT * 2;
+        for (int i = 0; i < discardedTiles.size(); i++) {
+            drawTile(g, centerX - (i % 6) * SMALL_TILE_WIDTH, centerY - (i / 6) * SMALL_TILE_HEIGHT, discardedTiles.get(i), 180, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+
+        // 繪製右邊玩家打出的牌
+        centerX = TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_WIDTH * 3;
+        centerY = TABLE_START_Y_POS + TABLE_HEIGHT / 2 - SMALL_TILE_HEIGHT / 2;
+        for (int i = 0; i < discardedTiles.size(); i++) {
+            drawTile(g, centerX  + (i / 6) * SMALL_TILE_HEIGHT, centerY - (i % 6) * SMALL_TILE_WIDTH, discardedTiles.get(i), 270, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+
+    }
+
     @Override
     public void mouseClicked(MouseEvent e) {
         int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
         int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
-        for (int i = 0; i < playerTiles.length; i++) {
+        for (int i = 0; i < playerTiles.size(); i++) {
             Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
             if (tileRect.contains(e.getPoint())) {
-                selectedTileIndex = (selectedTileIndex == i) ? -1 : i;
+                String discardedTile = playerTiles.get(i);
+                discardedTiles.add(discardedTile);
+                playerTiles.remove(i);
+                simulateDrawTile(); // 模拟抽一张新牌
+                selectedTileIndex = -1;
+                hoverTileIndex = -1;
                 repaint();
+                // 模拟其他玩家打出同样的牌
+                simulateOtherPlayersDiscard(discardedTile);
                 break;
             }
         }
+    }
+
+    private void simulateOtherPlayersDiscard(String tile) {
+        Timer timer = new Timer(1000, new ActionListener() {
+            int playerIndex = 0;
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                switch (playerIndex) {
+                    case 0:
+                        rightPlayerDiscardedTiles.add(tile);
+                        break;
+                    case 1:
+                        topPlayerDiscardedTiles.add(tile);
+                        break;
+                    case 2:
+                        leftPlayerDiscardedTiles.add(tile);
+                        break;
+                }
+                repaint();
+                playerIndex++;
+                if (playerIndex >= 3) {
+                    ((Timer) e.getSource()).stop();
+                }
+            }
+        });
+        timer.start();
     }
 
     @Override
@@ -205,7 +285,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
         int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
         hoverTileIndex = -1;
-        for (int i = 0; i < playerTiles.length; i++) {
+        for (int i = 0; i < playerTiles.size(); i++) {
             Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
             if (tileRect.contains(e.getPoint())) {
                 hoverTileIndex = i;
@@ -213,6 +293,14 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
             }
         }
         repaint();
+    }
+
+    private void simulateDrawTile() {
+        // 模拟从后端抽一张新牌
+        String[] possibleTiles = {"1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條", "4條"};
+        Random rand = new Random();
+        String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
+        playerTiles.add(newTile);
     }
 
     @Override
