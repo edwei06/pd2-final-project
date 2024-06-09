@@ -18,9 +18,10 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
 
-    private JButton chiButton, pengButton, gangButton;
+    private JButton chiButton, pengButton, gangButton, huButton;
 
     public GamePanel() {
+        setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // 深綠色背景模擬麻將桌
         addMouseListener(this);
@@ -32,27 +33,33 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         chiButton = new JButton("吃");
         pengButton = new JButton("碰");
         gangButton = new JButton("槓");
-
-        chiButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 120, 60, 30);
-        pengButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 80, 60, 30);
-        gangButton.setBounds(TABLE_START_X_POS + TABLE_WIDTH + 10, TABLE_START_Y_POS + TABLE_HEIGHT - 40, 60, 30);
+        huButton = new JButton("胡");
 
         chiButton.setVisible(false);
         pengButton.setVisible(false);
         gangButton.setVisible(false);
-
+        huButton.setVisible(false);
+        
         add(chiButton);
         add(pengButton);
         add(gangButton);
+        add(huButton);
     }
 
     public void showControlButtons() {
+        int buttonX = TABLE_START_X_POS + SMALL_TILE_HEIGHT + 350;
+        int buttonY = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT - 40; // 根據需要調整Y座標
+
+        chiButton.setBounds(buttonX + 80, buttonY, 60, 30);
+        pengButton.setBounds(buttonX + 160, buttonY, 60, 30);
+        gangButton.setBounds(buttonX + 240, buttonY, 60, 30);
+        huButton.setBounds(buttonX + 320, buttonY, 60, 30);
         chiButton.setVisible(true);
         pengButton.setVisible(true);
         gangButton.setVisible(true);
+        huButton.setVisible(true);
         repaint();
     }
-
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
