@@ -1,6 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
+import javax.swing.JFrame;
 
 public class MahjongGame extends JFrame {
     private GamePanel gamePanel;
@@ -8,9 +9,11 @@ public class MahjongGame extends JFrame {
     public MahjongGame() {
         setTitle("Mahjong Game");
         setSize(1024, 768);
+        setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         initUI();
+        
     }
 
     private void initUI() {
