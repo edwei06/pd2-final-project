@@ -7,7 +7,7 @@ import java.util.Random;
 import javax.swing.*;
 
 class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
-    private List<String> playerTiles = new ArrayList<>(Arrays.asList("1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
+    private List<String> playerTiles = new ArrayList<>(Arrays.asList("\uD83C\uDC19", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
     private String[] eatenTiles = {"1筒", "2筒", "3筒"}; // 示例吃牌
 
     private static final int TILE_WIDTH = 40;
@@ -155,6 +155,7 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     }
 
     private void drawTile(Graphics g, int x, int y, String tileText, int rotate, int width, int height) {
+        float fontSize = 57;
         Graphics2D g2d = (Graphics2D) g.create();
         if (rotate != 0) {
             g2d.rotate(Math.toRadians(rotate), x, y);  // 旋轉牌
@@ -163,9 +164,13 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         g2d.fillRect(x, y, width, height);  // 繪製麻將牌
         g2d.setColor(Color.BLACK);
         g2d.drawRect(x, y, width, height);  // 繪製牌的邊框
-
+        // 设置字体大小
+        Font originalFont = g2d.getFont();
+        Font newFont = originalFont.deriveFont((float) fontSize);
+        g2d.setFont(newFont);
+        
         // 繪製麻將牌上的文字或圖案
-        g2d.drawString(tileText, x + width / 3, y + height / 2);
+        g2d.drawString(tileText, x , y + TILE_HEIGHT - 5);
         g2d.dispose();
     }
 
