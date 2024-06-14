@@ -1,10 +1,19 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JFrame;
 
 public class MahjongGame extends JFrame {
     private GamePanel gamePanel;
+
+    public void MahjongLogin() {
+        setTitle("Mahjong Login");
+        setSize(1024, 768);
+        setResizable(false);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        initUI();
+        
+    }
 
     public MahjongGame() {
         setTitle("Mahjong Game");
@@ -43,8 +52,10 @@ public class MahjongGame extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            MahjongGame game = new MahjongGame();
-            game.setVisible(true);
+            new Login();
+
+            /*MahjongGame game = new MahjongGame();
+            game.setVisible(true);*/
         });
     }
 }
