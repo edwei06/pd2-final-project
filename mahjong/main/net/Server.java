@@ -5,7 +5,8 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
 
-import mahjong.main.game.action.ServerGame;
+import mahjong.main.game.ServerGame;
+import mahjong.main.net.pocket.ClientPocket;
 
 /**
  * <p>
@@ -36,11 +37,11 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'run'");
+        new Thread(() -> acceptClientLoop()).start();
+        new Thread(() -> startGameLoop()).start();
     }
 
-    public void acceptClient(){
+    public void acceptClientLoop(){
         System.out.println("Accepting Clients !!!");
         while (true) {
             System.out.println("Waiting for client...");
@@ -60,4 +61,23 @@ public class Server implements Runnable{
         }
     }
 
+    public void startGameLoop(){
+        // TODO :實作或呼叫tick() 讓他進行資訊更新
+    }
+
+    public void processPacket(final ClientHandler clientHandler, final ClientPocket pocket){
+        // TODO :透過instanceof 判斷是哪種封包(指令or斷線) ， 用game來傳入封包
+    }
+
+    // server to all client
+    public void sendUpdatesToAll(){
+        for(ClientHandler clientHandler : clientHandlers){
+            sendUpdates(clientHandler);
+        }
+    }
+
+    // sever to one client
+    public void sendUpdates(ClientHandler clientHandler){
+        clientHandler.sendUpdate(game.getActions());
+    }
 }
