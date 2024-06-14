@@ -1,5 +1,5 @@
 package mahjong.main.game.action;
 
-public class SeverGame {
+public class ServerGame {
     
 }
