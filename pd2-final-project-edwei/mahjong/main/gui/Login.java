@@ -34,6 +34,8 @@ public class Login extends JFrame implements ActionListener{
             MahjongGame game = new MahjongGame();
             game.setVisible(true);
             //System.out.println("penis");
+            System.out.println("you have "+ ipAddress.getText()+ " penis"); //使用者可能會輸入這兩個變數
+            System.out.println("you have "+ portNumber.getText()+ " penis");
         }
     }
 
