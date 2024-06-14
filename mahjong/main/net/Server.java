@@ -76,7 +76,7 @@ public class Server implements Runnable{
         }
     }
 
-    // sever to one client
+    // server to one client
     public void sendUpdates(ClientHandler clientHandler){
         clientHandler.sendUpdate(game.getActions());
     }
