@@ -18,12 +18,12 @@ import mahjong.main.game.action.ServerGame;
  * 4. 進行與client的連通
  * </p>
  */
-public class Sever implements Runnable{
+public class Server implements Runnable{
     private final ServerGame game;
     private ServerSocket serverSocket;
     private final ArrayList<ClientHandler> clientHandlers;
 
-    public Sever (ServerGame game , final int port){
+    public Server (ServerGame game , final int port){
         this.game = game;
         try{
             this.serverSocket = new ServerSocket(port);
