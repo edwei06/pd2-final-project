@@ -1,7 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JFrame;
 
 public class MahjongGame extends JFrame {
     private GamePanel gamePanel;
@@ -21,6 +20,9 @@ public class MahjongGame extends JFrame {
         mainPanel.setLayout(new BorderLayout());
 
         gamePanel = new GamePanel();
+        ClientInputHandler inputHandler = new ClientInputHandler(gamePanel);
+        gamePanel.addMouseListener(inputHandler);
+        gamePanel.addMouseMotionListener(inputHandler);
         mainPanel.add(gamePanel, BorderLayout.CENTER);
 
         add(mainPanel);

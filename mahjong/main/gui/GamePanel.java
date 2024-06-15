@@ -1,23 +1,24 @@
 import java.awt.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import javax.swing.*;
 
-class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
+class GamePanel extends JPanel {
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("\uD83C\uDC19", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
     private String[] eatenTiles = {"1筒", "2筒", "3筒"}; // 示例吃牌
 
-    private static final int TILE_WIDTH = 40;
-    private static final int TILE_HEIGHT = 56;
-    private static final int SMALL_TILE_WIDTH = 30;
-    private static final int SMALL_TILE_HEIGHT = 42;
-    private static final int TABLE_WIDTH = 900;
-    private static final int TABLE_HEIGHT = 675;
-    private static final int TABLE_START_X_POS = 62;
-    private static final int TABLE_START_Y_POS = 46;
+    static final int TILE_WIDTH = 40;
+    static final int TILE_HEIGHT = 56;
+    static final int SMALL_TILE_WIDTH = 30;
+    static final int SMALL_TILE_HEIGHT = 42;
+    static final int TABLE_WIDTH = 900;
+    static final int TABLE_HEIGHT = 675;
+    static final int TABLE_START_X_POS = 62;
+    static final int TABLE_START_Y_POS = 46;
 
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
@@ -33,8 +34,6 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // 深綠色背景模擬麻將桌
-        addMouseListener(this);
-        addMouseMotionListener(this);
         initControlButtons();
         discardedTiles = new ArrayList<>();
         rightPlayerDiscardedTiles = new ArrayList<>();
@@ -107,11 +106,8 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
     }
 
     private void drawPlayerTiles(Graphics g) {
-        //int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框線坐標讓20px
-        //int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;  // 從左下角開始對齊邊框: 邊框坐標扣畫tile高度
-
-        int x =512;
-        int y =384;
+        int x = 512;
+        int y = 384;
         // 繪製玩家的手牌
         for (int i = 0; i < playerTiles.size(); i++) {
             if (i == hoverTileIndex || i == selectedTileIndex) {
@@ -239,13 +235,12 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
 
     }
 
-    @Override
-    public void mouseClicked(MouseEvent e) {
-        int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
-        int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
+    public void handleTileClick(int x, int y) {
+        int baseX = 512 - 400;
+        int baseY = 384 + 275;
         for (int i = 0; i < playerTiles.size(); i++) {
-            Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
-            if (tileRect.contains(e.getPoint())) {
+            Rectangle tileRect = new Rectangle(baseX + i * TILE_WIDTH, baseY, TILE_WIDTH, TILE_HEIGHT);
+            if (tileRect.contains(new Point(x, y))) {
                 String discardedTile = playerTiles.get(i);
                 discardedTiles.add(discardedTile);
                 playerTiles.remove(i);
@@ -264,18 +259,11 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         Timer timer = new Timer(1000, new ActionListener() {
             int playerIndex = 0;
 
-            @Override
             public void actionPerformed(ActionEvent e) {
                 switch (playerIndex) {
-                    case 0:
-                        rightPlayerDiscardedTiles.add(tile);
-                        break;
-                    case 1:
-                        topPlayerDiscardedTiles.add(tile);
-                        break;
-                    case 2:
-                        leftPlayerDiscardedTiles.add(tile);
-                        break;
+                    case 0 -> rightPlayerDiscardedTiles.add(tile);
+                    case 1 -> topPlayerDiscardedTiles.add(tile);
+                    case 2 -> leftPlayerDiscardedTiles.add(tile);
                 }
                 repaint();
                 playerIndex++;
@@ -287,14 +275,13 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         timer.start();
     }
 
-    @Override
-    public void mouseMoved(MouseEvent e) {
-        int x = TABLE_START_X_POS + 20 + SMALL_TILE_HEIGHT;
-        int y = TABLE_HEIGHT + TABLE_START_Y_POS - TILE_HEIGHT;
+    public void handleTileHover(int x, int y) {
         hoverTileIndex = -1;
+        int baseX = 512 - 400;
+        int baseY = 384 + 275;
         for (int i = 0; i < playerTiles.size(); i++) {
-            Rectangle tileRect = new Rectangle(x + i * TILE_WIDTH, y, TILE_WIDTH, TILE_HEIGHT);
-            if (tileRect.contains(e.getPoint())) {
+            Rectangle tileRect = new Rectangle(baseX + i * TILE_WIDTH, baseY, TILE_WIDTH, TILE_HEIGHT);
+            if (tileRect.contains(new Point(x, y))) {
                 hoverTileIndex = i;
                 break;
             }
@@ -309,15 +296,4 @@ class GamePanel extends JPanel implements MouseListener, MouseMotionListener {
         String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
         playerTiles.add(newTile);
     }
-
-    @Override
-    public void mouseDragged(MouseEvent e) {}
-    @Override
-    public void mouseEntered(MouseEvent e) {}
-    @Override
-    public void mouseExited(MouseEvent e) {}
-    @Override
-    public void mousePressed(MouseEvent e) {}
-    @Override
-    public void mouseReleased(MouseEvent e) {}
 }
