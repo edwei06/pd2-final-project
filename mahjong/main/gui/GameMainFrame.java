@@ -18,19 +18,21 @@ public class GameMainFrame extends JFrame {
     private void initUI() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
-
+    
         gamePanel = new GamePanel();
         ClientInputHandler inputHandler = new ClientInputHandler(gamePanel);
         gamePanel.addMouseListener(inputHandler);
         gamePanel.addMouseMotionListener(inputHandler);
-        mainPanel.add(gamePanel, BorderLayout.CENTER);
+    
+        mainPanel.add(gamePanel, BorderLayout.CENTER);  // Add gamePanel to mainPanel
 
         add(mainPanel);
-
+        // gamePanel.showControlButtons();
+    
         // 模擬後端信號
         simulateBackendSignal();
     }
-
+    
     private void simulateBackendSignal() {
         // 模擬後端信號來顯示控制按鈕
         Timer timer = new Timer(3000, new ActionListener() {

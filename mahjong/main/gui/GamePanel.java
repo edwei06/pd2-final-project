@@ -10,7 +10,7 @@ import javax.swing.*;
 class GamePanel extends JPanel {
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
     private String[] eatenTiles = {"1筒", "2筒", "3筒"}; // 示例吃牌
-
+    private ControlPanel controlPanel = new ControlPanel(this);
     static final int TILE_WIDTH = 40;
     static final int TILE_HEIGHT = 56;
     static final int SMALL_TILE_WIDTH = 30;
@@ -23,7 +23,7 @@ class GamePanel extends JPanel {
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
 
-    private JButton chiLowButton, chiMidButton, chiUpButton, pengButton, gangButton, cancelButton, huButton;
+    private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
 
     private List<String> discardedTiles; // 用于保存打出的牌
     private List<String> rightPlayerDiscardedTiles;
@@ -34,19 +34,22 @@ class GamePanel extends JPanel {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // 深綠色背景模擬麻將桌
-        initControlButtons();
+        // initControlButtons();
+        // controlPanel = new ControlPanel();
+        // add(controlPanel);
+
         discardedTiles = new ArrayList<>();
         rightPlayerDiscardedTiles = new ArrayList<>();
         topPlayerDiscardedTiles = new ArrayList<>();
         leftPlayerDiscardedTiles = new ArrayList<>();
         simulateDrawTile(); // 模拟游戏开始时抽一张牌
     }
-
+/*
     private void initControlButtons() {
         chiLowButton = new JButton("吃第一張");
         chiMidButton = new JButton("吃中間張");
         chiUpButton = new JButton("吃最後張");
-        pengButton = new JButton("碰");
+        pongButton = new JButton("碰");
         gangButton = new JButton("槓");
         cancelButton = new JButton("取消");
         huButton = new JButton("胡");
@@ -54,7 +57,7 @@ class GamePanel extends JPanel {
         chiLowButton.setVisible(false);
         chiMidButton.setVisible(false);
         chiUpButton.setVisible(false);
-        pengButton.setVisible(false);
+        pongButton.setVisible(false);
         gangButton.setVisible(false);
         cancelButton.setVisible(false);
         huButton.setVisible(false);
@@ -62,7 +65,7 @@ class GamePanel extends JPanel {
         add(chiLowButton);
         add(chiMidButton);
         add(chiUpButton);
-        add(pengButton);
+        add(pongButton);
         add(gangButton);
         add(cancelButton);
         add(huButton);
@@ -75,18 +78,22 @@ class GamePanel extends JPanel {
         chiLowButton.setBounds(buttonX + 80, buttonY, 90, 30);
         chiMidButton.setBounds(buttonX + 160, buttonY, 90, 30);
         chiUpButton.setBounds(buttonX + 240, buttonY, 90, 30);
-        pengButton.setBounds(buttonX + 160, buttonY - 40, 60, 30);
+        pongButton.setBounds(buttonX + 160, buttonY - 40, 60, 30);
         gangButton.setBounds(buttonX + 240, buttonY - 40, 60, 30);
         cancelButton.setBounds(buttonX + 160, buttonY + 40, 60, 30);
         huButton.setBounds(buttonX + 80, buttonY - 40, 60, 30);
         chiLowButton.setVisible(true);
         chiMidButton.setVisible(true);
         chiUpButton.setVisible(true);
-        pengButton.setVisible(true);
+        pongButton.setVisible(true);
         gangButton.setVisible(true);
         cancelButton.setVisible(true);
         huButton.setVisible(true);
         repaint();
+    }
+*/
+    public void showControlButtons(){
+        controlPanel.showCancelButton();
     }
 
     @Override
