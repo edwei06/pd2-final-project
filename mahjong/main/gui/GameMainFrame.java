@@ -20,16 +20,10 @@ public class GameMainFrame extends JFrame {
         mainPanel.setLayout(new BorderLayout());
     
         gamePanel = new GamePanel();
-        ClientInputHandler inputHandler = new ClientInputHandler(gamePanel);
-        gamePanel.addMouseListener(inputHandler);
-        gamePanel.addMouseMotionListener(inputHandler);
     
         mainPanel.add(gamePanel, BorderLayout.CENTER);  // Add gamePanel to mainPanel
 
         add(mainPanel);
-        // gamePanel.showControlButtons();
-    
-        // 模擬後端信號
         simulateBackendSignal();
     }
     

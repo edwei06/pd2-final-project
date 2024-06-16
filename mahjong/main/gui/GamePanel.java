@@ -16,6 +16,14 @@ class GamePanel extends JPanel {
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
     private List<JButton> playerTileButtons;
+    private List<JButton> discardedTileButtons; // Buttons for discarded tiles
+    private List<JButton> rightPlayerDiscardedTileButtons;
+    private List<JButton> topPlayerDiscardedTileButtons;
+    private List<JButton> leftPlayerDiscardedTileButtons;
+    private List<JButton> playerEatenTileButtons;
+    private List<JButton> rightPlayerEatenTileButtons;
+    private List<JButton> topPlayerEatenTileButtons;
+    private List<JButton> leftPlayerEatenTileButtons;
     static final int TILE_WIDTH = 40;
     static final int TILE_HEIGHT = 56;
     static final int SMALL_TILE_WIDTH = 30;
@@ -34,6 +42,9 @@ class GamePanel extends JPanel {
     private List<String> rightPlayerDiscardedTiles;
     private List<String> topPlayerDiscardedTiles;
     private List<String> leftPlayerDiscardedTiles;
+    private JButton tilesLeftButton;
+    private int totalTilesLeft = 144;  // Example initial count, adjust as necessary
+
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
 
@@ -47,10 +58,20 @@ class GamePanel extends JPanel {
         topPlayerDiscardedTiles = new ArrayList<>();
         leftPlayerDiscardedTiles = new ArrayList<>();
         playerTileButtons = new ArrayList<>();  // Initialize the playerTileButtons list
+        discardedTileButtons = new ArrayList<>(); // Initialize the discardedTileButtons list
+        rightPlayerDiscardedTileButtons = new ArrayList<>();
+        topPlayerDiscardedTileButtons = new ArrayList<>();
+        leftPlayerDiscardedTileButtons = new ArrayList<>();
+        playerEatenTileButtons = new ArrayList<>();
+        rightPlayerEatenTileButtons = new ArrayList<>();
+        topPlayerEatenTileButtons = new ArrayList<>();
+        leftPlayerEatenTileButtons = new ArrayList<>();    
 
+        initializeTilesLeftButton();
         loadTileImages();
         simulateDrawTile();
         initializePlayerTileButtons();
+  
     }
 
     private void initializePlayerTileButtons() {
@@ -63,6 +84,30 @@ class GamePanel extends JPanel {
         }
     }
 
+    private void initializeTilesLeftButton() {
+        tilesLeftButton = new JButton(String.valueOf(totalTilesLeft));
+        tilesLeftButton.setBounds(430, 300, 80, 80);  // Position it in the middle and make it a circle
+        tilesLeftButton.setFocusPainted(false);
+        tilesLeftButton.setContentAreaFilled(false);
+        tilesLeftButton.setBorderPainted(false);
+        tilesLeftButton.setOpaque(true);
+        tilesLeftButton.setBackground(Color.BLACK);
+        tilesLeftButton.setForeground(Color.WHITE);
+        tilesLeftButton.setFont(new Font("Arial", Font.BOLD, 24));
+    
+        // Make the button circular
+        tilesLeftButton.setPreferredSize(new Dimension(100, 100));
+        tilesLeftButton.setMaximumSize(new Dimension(100, 100));
+        tilesLeftButton.setMinimumSize(new Dimension(100, 100));
+        tilesLeftButton.setHorizontalAlignment(SwingConstants.CENTER);
+        tilesLeftButton.setVerticalAlignment(SwingConstants.CENTER);
+    
+        tilesLeftButton.setEnabled(false);  // Make the button non-interactive
+    
+        add(tilesLeftButton);
+    }
+    
+    
     private JButton createTileButton(String tile, int x, int y) {
         ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
         Image scaledImage = originalIcon.getImage().getScaledInstance(40, 56, Image.SCALE_SMOOTH);
@@ -94,8 +139,10 @@ class GamePanel extends JPanel {
         playerTiles.remove(tile);
         simulateDrawTile(); // Simulate drawing a new tile
         updatePlayerTileButtons();
+        updateDiscardedTileButtons();
         repaint();
         simulateOtherPlayersDiscard(tile);
+        updateEatenTileButtons();
     }
 
     private void updatePlayerTileButtons() {
@@ -116,6 +163,208 @@ class GamePanel extends JPanel {
         repaint();
     }
 
+    private void updateDiscardedTileButtons() {
+        for (JButton button : discardedTileButtons) {
+            remove(button);
+        }
+        discardedTileButtons.clear();
+
+        int baseX = getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH;
+        int baseY = getHeight() / 2 - SMALL_TILE_HEIGHT / 2 + 50;
+
+        for (int i = 0; i < discardedTiles.size(); i++) {
+            int x = baseX + (i % 6) * SMALL_TILE_WIDTH;
+            int y = baseY + (i / 6) * SMALL_TILE_HEIGHT;
+            JButton tileButton = createDiscardedTileButton(discardedTiles.get(i), x, y);
+            discardedTileButtons.add(tileButton);
+            add(tileButton);
+        }
+
+        revalidate();
+        repaint();
+    }
+
+    private void initializeEatenTileButtons() {
+        // Initialize eaten tiles for player
+        int x = TABLE_START_X_POS + TABLE_WIDTH;
+        int y = TABLE_START_Y_POS + TABLE_HEIGHT - TILE_HEIGHT;
+        for (int i = 0; i < eatenTiles.length; i++) {
+            JButton tileButton = createEatenTileButton(eatenTiles[i], x - i * TILE_WIDTH, y, 0);
+            playerEatenTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    }
+    
+    private void updateEatenTileButtons() {
+        for (JButton button : playerEatenTileButtons) {
+            remove(button);
+        }
+        playerEatenTileButtons.clear();
+    
+        int x = TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_WIDTH;
+        int y = TABLE_START_Y_POS + TABLE_HEIGHT - TILE_HEIGHT;
+        for (int i = 0; i < eatenTiles.length; i++) {
+            JButton tileButton = createEatenTileButton(eatenTiles[i], x - i * SMALL_TILE_WIDTH, y, 0);
+            playerEatenTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    
+        updateOtherPlayersEatenTileButtons();
+    
+        revalidate();
+        repaint();
+    }
+    
+    private void updateOtherPlayersEatenTileButtons() {
+        for (JButton button : rightPlayerEatenTileButtons) {
+            remove(button);
+        }
+        rightPlayerEatenTileButtons.clear();
+    
+        for (JButton button : topPlayerEatenTileButtons) {
+            remove(button);
+        }
+        topPlayerEatenTileButtons.clear();
+    
+        for (JButton button : leftPlayerEatenTileButtons) {
+            remove(button);
+        }
+        leftPlayerEatenTileButtons.clear();
+    
+        // right player eaten tiles
+        int x = TABLE_WIDTH + SMALL_TILE_WIDTH;
+        int y = TABLE_START_Y_POS;
+        for (int i = 0; i < eatenTiles.length; i++) {
+            JButton tileButton = createEatenTileButton(eatenTiles[i], x, y + i * SMALL_TILE_WIDTH, 270);
+            rightPlayerEatenTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    
+        // top player eaten tiles
+        x = TABLE_START_X_POS;
+        y = TABLE_START_Y_POS;
+        for (int i = 0; i < eatenTiles.length; i++) {
+            JButton tileButton = createEatenTileButton(eatenTiles[i], x + i * SMALL_TILE_WIDTH, y, 180);
+            topPlayerEatenTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    
+        // left player eaten tiles
+        x = TABLE_START_X_POS;
+        y = TABLE_START_Y_POS + TABLE_HEIGHT - SMALL_TILE_WIDTH;
+        for (int i = 0; i < eatenTiles.length; i++) {
+            JButton tileButton = createEatenTileButton(eatenTiles[i], x, y - i * SMALL_TILE_WIDTH, 90);
+            leftPlayerEatenTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    }
+    
+    private JButton createEatenTileButton(String tile, int x, int y, int rotation) {
+        ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
+        Image scaledImage;
+        scaledImage = originalIcon.getImage().getScaledInstance(SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+    
+        JButton tileButton = new JButton(scaledIcon);
+        if (rotation == 90 || rotation == 270) {
+            tileButton.setBounds(x, y, SMALL_TILE_HEIGHT, SMALL_TILE_WIDTH);
+        } else {
+            tileButton.setBounds(x, y, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+        tileButton.setFocusPainted(false);
+        tileButton.setContentAreaFilled(false);
+        tileButton.setBorderPainted(false);
+    
+        // Rotate the button
+        tileButton.setIcon(new RotatedIcon(scaledIcon, rotation));
+    
+        return tileButton;
+    }
+    
+
+    private JButton createDiscardedTileButton(String tile, int x, int y) {
+        ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        JButton tileButton = new JButton(scaledIcon);
+        tileButton.setBounds(x, y, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        tileButton.setFocusPainted(false);
+        tileButton.setContentAreaFilled(false);
+        tileButton.setBorderPainted(false);
+
+        return tileButton;
+    }
+
+    private void updateOtherPlayersDiscardedTileButtons() {
+        for (JButton button : rightPlayerDiscardedTileButtons) {
+            remove(button);
+        }
+        rightPlayerDiscardedTileButtons.clear();
+
+        for (JButton button : topPlayerDiscardedTileButtons) {
+            remove(button);
+        }
+        topPlayerDiscardedTileButtons.clear();
+
+        for (JButton button : leftPlayerDiscardedTileButtons) {
+            remove(button);
+        }
+        leftPlayerDiscardedTileButtons.clear();
+        // right player
+        int centerX = getWidth() / 2 + 150 - 2 * SMALL_TILE_WIDTH;
+        int centerY = getHeight() / 2 + 50;
+        for (int i = 0; i < rightPlayerDiscardedTiles.size(); i++) {
+            int x = centerX + (i / 6) * SMALL_TILE_HEIGHT;
+            int y = centerY - (i % 6) * SMALL_TILE_WIDTH;
+            JButton tileButton = createDiscardedTileButton(rightPlayerDiscardedTiles.get(i), x, y, 270);
+            rightPlayerDiscardedTileButtons.add(tileButton);
+            add(tileButton);
+        }
+        // top player
+        centerX = getWidth() - (getWidth() / 2 - 2 * SMALL_TILE_WIDTH);
+        centerY = getHeight() - (getHeight() / 2 - SMALL_TILE_HEIGHT / 2 + 150);
+        for (int i = 0; i < topPlayerDiscardedTiles.size(); i++) {
+            int x = centerX - (i % 6) * SMALL_TILE_WIDTH;
+            int y = centerY - (i / 6) * SMALL_TILE_HEIGHT;
+            JButton tileButton = createDiscardedTileButton(topPlayerDiscardedTiles.get(i), x, y, 180);
+            topPlayerDiscardedTileButtons.add(tileButton);
+            add(tileButton);
+        }
+        // left player
+        centerX = getWidth() / 2 - 100 - 2 * SMALL_TILE_WIDTH;
+        centerY = getHeight() / 2 - 50 - 2 * SMALL_TILE_HEIGHT;
+        for (int i = 0; i < leftPlayerDiscardedTiles.size(); i++) {
+            int x = centerX - (i / 6) * SMALL_TILE_HEIGHT;
+            int y = centerY + (i % 6) * SMALL_TILE_WIDTH;
+            JButton tileButton = createDiscardedTileButton(leftPlayerDiscardedTiles.get(i), x, y, 90);
+            leftPlayerDiscardedTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    }
+
+    private JButton createDiscardedTileButton(String tile, int x, int y, int rotation) {
+        ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
+        Image scaledImage;
+        scaledImage = originalIcon.getImage().getScaledInstance(SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+
+        JButton tileButton = new JButton(scaledIcon);
+        if (rotation == 90 || rotation == 270) {
+            tileButton.setBounds(x, y, SMALL_TILE_HEIGHT, SMALL_TILE_WIDTH);
+        } else {
+            tileButton.setBounds(x, y, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
+        }
+        tileButton.setFocusPainted(false);
+        tileButton.setContentAreaFilled(false);
+        tileButton.setBorderPainted(false);
+
+        // Rotate the button
+        tileButton.setIcon(new RotatedIcon(scaledIcon, rotation));
+
+        return tileButton;
+    }
+
     private void loadTileImages() {
         tileImages = new HashMap<>();
         String[] suits = {"Tong", "Tiao", "Wong"};
@@ -132,7 +381,38 @@ class GamePanel extends JPanel {
             }
         }
     }
-    
+
+    // Helper class for rotating icons
+    class RotatedIcon implements Icon {
+        private Icon icon;
+        private double angle;
+
+        public RotatedIcon(Icon icon, int angle) {
+            this.icon = icon;
+            this.angle = Math.toRadians(angle);
+        }
+
+        @Override
+        public void paintIcon(Component c, Graphics g, int x, int y) {
+            Graphics2D g2d = (Graphics2D) g.create();
+            int cx = x + icon.getIconWidth() / 2;
+            int cy = y + icon.getIconHeight() / 2;
+            g2d.rotate(angle, cx, cy);
+            icon.paintIcon(c, g2d, x, y);
+            g2d.dispose();
+        }
+
+        @Override
+        public int getIconWidth() {
+            return icon.getIconWidth();
+        }
+
+        @Override
+        public int getIconHeight() {
+            return icon.getIconHeight();
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -140,11 +420,9 @@ class GamePanel extends JPanel {
         drawGridLines(g);
         // 繪製麻將桌和牌
         drawTable(g);
-        // drawPlayerTiles(g);
         drawOtherPlayersTiles(g);
-        drawEatenTiles(g);
-        drawDiscardedTiles(g);
     }
+    
 
     private void drawGridLines(Graphics g) {
         g.setColor(Color.LIGHT_GRAY);
@@ -162,19 +440,6 @@ class GamePanel extends JPanel {
         g.setColor(Color.BLACK);
         // 繪製牌桌邊框
         g.drawRect(TABLE_START_X_POS, TABLE_START_Y_POS, TABLE_WIDTH, TABLE_HEIGHT);
-    }
-
-    private void drawPlayerTiles(Graphics g) {
-        int x = 112;
-        int y = 559;
-        // 繪製玩家的手牌
-        for (int i = 0; i < playerTiles.size(); i++) {
-            if (i == hoverTileIndex || i == selectedTileIndex) {
-                drawTileImage(g,250 + i * (65),1120, playerTiles.get(i), 0,80, 112);  // 向上移動的效果
-            } else {
-                drawTileImage(g,250 + i * (65),1120 + 20, playerTiles.get(i), 0, 80 , 112);
-            }
-        }
     }
 
     private void drawOtherPlayersTiles(Graphics g) {
@@ -224,91 +489,6 @@ class GamePanel extends JPanel {
         }
     }
 
-    private void drawEatenTiles(Graphics g) {
-        // 繪製自己右側的吃牌
-        int x = TABLE_START_X_POS + TABLE_WIDTH - TILE_WIDTH;  // 玩家右側的牌桌邊緣
-        int y = TABLE_START_Y_POS + TABLE_HEIGHT - TILE_HEIGHT;
-
-        for (int i = 0; i < eatenTiles.length; i++) {
-            drawTileImage(g, x - i * TILE_WIDTH, y, eatenTiles[i], 0, TILE_WIDTH, TILE_HEIGHT);
-        }
-
-        // 繪製上方玩家的吃牌
-        x = TABLE_START_X_POS;  // 上方玩家右側的牌桌邊緣
-        y = TABLE_START_Y_POS + SMALL_TILE_HEIGHT;
-
-        for (int i = 0; i < eatenTiles.length; i++) {
-            drawTileImage(g, x + (i + 1) * SMALL_TILE_WIDTH, y, eatenTiles[i], 0, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-        // 繪製左側玩家的吃牌
-        x = TABLE_START_X_POS + SMALL_TILE_HEIGHT;
-        y = TABLE_START_Y_POS + TABLE_HEIGHT;  // 左側玩家右側的牌桌邊緣
-
-        for (int i = 0; i < eatenTiles.length; i++) {
-            drawTileImage(g, x, y - (i + 1) * SMALL_TILE_WIDTH, eatenTiles[i], 0, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-        // 繪製右側玩家的吃牌
-        x = TABLE_START_X_POS + TABLE_WIDTH - SMALL_TILE_HEIGHT; //
-        y = TABLE_START_Y_POS + SMALL_TILE_WIDTH;  // 右側玩家右側的牌桌邊緣
-
-        for (int i = 0; i < eatenTiles.length; i++) {
-            drawTileImage(g, x, y + i * SMALL_TILE_WIDTH, eatenTiles[i], 0, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-    }
-
-    private void drawDiscardedTiles(Graphics g) {
-        // 繪製自己打出的牌
-        int centerX = getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH;
-        int centerY = getHeight() / 2 - SMALL_TILE_HEIGHT / 2 + 50;
-        for (int i = 0; i < discardedTiles.size(); i++) {
-            drawTileImage(g, centerX + (i % 6) * SMALL_TILE_WIDTH, centerY + (i / 6) * SMALL_TILE_HEIGHT, discardedTiles.get(i), 0, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-        // 繪製左邊玩家打出的牌
-        centerX = getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH;
-        centerY = getHeight() / 2 - 50 - 2 * SMALL_TILE_HEIGHT;
-        for (int i = 0; i < discardedTiles.size(); i++) {
-            drawTileImage(g, centerX - (i / 6) * SMALL_TILE_HEIGHT, centerY + (i % 6) * SMALL_TILE_WIDTH, discardedTiles.get(i), 90, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-        // 繪製上方玩家打出的牌
-        centerX = getWidth() - (getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH);
-        centerY = getHeight() - (getHeight() / 2 - SMALL_TILE_HEIGHT / 2 + 150);
-        for (int i = 0; i < discardedTiles.size(); i++) {
-            drawTileImage(g, centerX - (i % 6) * SMALL_TILE_WIDTH, centerY - (i / 6) * SMALL_TILE_HEIGHT, discardedTiles.get(i), 180, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-        // 繪製右邊玩家打出的牌
-        centerX = getWidth() - (getWidth() / 2 - 50 - 2 * SMALL_TILE_WIDTH);
-        centerY = getHeight() - (getHeight() / 2 - 50 - 2 * SMALL_TILE_HEIGHT +100);
-        for (int i = 0; i < discardedTiles.size(); i++) {
-            drawTileImage(g, centerX  + (i / 6) * SMALL_TILE_HEIGHT, centerY - (i % 6) * SMALL_TILE_WIDTH, discardedTiles.get(i), 270, SMALL_TILE_WIDTH, SMALL_TILE_HEIGHT);
-        }
-
-    }
-
-    public void handleTileClick(int x, int y) {
-        int baseX = 512 - 400;
-        int baseY = 384 + 275;
-        for (int i = 0; i < playerTiles.size(); i++) {
-            Rectangle tileRect = new Rectangle(baseX + i * TILE_WIDTH, baseY, TILE_WIDTH, TILE_HEIGHT);
-            if (tileRect.contains(new Point(x, y))) {
-                String discardedTile = playerTiles.get(i);
-                discardedTiles.add(discardedTile);
-                playerTiles.remove(i);
-                simulateDrawTile(); // 模擬抽一張新牌
-                selectedTileIndex = -1;
-                hoverTileIndex = -1;
-                repaint();
-                // 模擬其他玩家打出相同的牌
-                simulateOtherPlayersDiscard(discardedTile);
-                break;
-            }
-        }
-    }
-
     private void simulateOtherPlayersDiscard(String tile) {
         Timer timer = new Timer(1000, new ActionListener() {
             int playerIndex = 0;
@@ -319,6 +499,7 @@ class GamePanel extends JPanel {
                     case 1 -> topPlayerDiscardedTiles.add(tile);
                     case 2 -> leftPlayerDiscardedTiles.add(tile);
                 }
+                updateOtherPlayersDiscardedTileButtons();
                 repaint();
                 playerIndex++;
                 if (playerIndex >= 3) {
@@ -329,25 +510,19 @@ class GamePanel extends JPanel {
         timer.start();
     }
 
-    public void handleTileHover(int x, int y) {
-        hoverTileIndex = -1;
-        int baseX = 512 - 380;
-        int baseY = 384 + 275;
-        for (int i = 0; i < playerTiles.size(); i++) {
-            Rectangle tileRect = new Rectangle(baseX + i * TILE_WIDTH, baseY, TILE_WIDTH, TILE_HEIGHT);
-            if (tileRect.contains(new Point(x, y))) {
-                hoverTileIndex = i;
-                break;
-            }
-        }
-        repaint();
-    }
+private void updateTilesLeftButton() {
+    totalTilesLeft--;  // Decrement the number of tiles left
+    tilesLeftButton.setText(String.valueOf(totalTilesLeft));
+    repaint();
+}
 
-    private void simulateDrawTile() {
-        // 模擬從後端抽一張新牌
-        String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
-        Random rand = new Random();
-        String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
-        playerTiles.add(newTile);
-    }
+private void simulateDrawTile() {
+    // Simulate drawing a new tile from the backend
+    String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
+    Random rand = new Random();
+    String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
+    playerTiles.add(newTile);
+    updateTilesLeftButton();  // Update the button text
+}
+
 }
