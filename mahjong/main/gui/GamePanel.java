@@ -8,7 +8,7 @@ import java.util.Random;
 import javax.swing.*;
 
 class GamePanel extends JPanel {
-    private List<String> playerTiles = new ArrayList<>(Arrays.asList("\uD83C\uDC19", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
+    private List<String> playerTiles = new ArrayList<>(Arrays.asList("1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條"));
     private String[] eatenTiles = {"1筒", "2筒", "3筒"}; // 示例吃牌
 
     static final int TILE_WIDTH = 40;
@@ -23,7 +23,7 @@ class GamePanel extends JPanel {
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
 
-    private JButton chiButton, pengButton, gangButton, huButton;
+    private JButton chiLowButton, chiMidButton, chiUpButton, pengButton, gangButton, cancelButton, huButton;
 
     private List<String> discardedTiles; // 用于保存打出的牌
     private List<String> rightPlayerDiscardedTiles;
@@ -43,19 +43,28 @@ class GamePanel extends JPanel {
     }
 
     private void initControlButtons() {
-        chiButton = new JButton("吃");
+        chiLowButton = new JButton("吃第一張");
+        chiMidButton = new JButton("吃中間張");
+        chiUpButton = new JButton("吃最後張");
         pengButton = new JButton("碰");
         gangButton = new JButton("槓");
+        cancelButton = new JButton("取消");
         huButton = new JButton("胡");
 
-        chiButton.setVisible(false);
+        chiLowButton.setVisible(false);
+        chiMidButton.setVisible(false);
+        chiUpButton.setVisible(false);
         pengButton.setVisible(false);
         gangButton.setVisible(false);
+        cancelButton.setVisible(false);
         huButton.setVisible(false);
 
-        add(chiButton);
+        add(chiLowButton);
+        add(chiMidButton);
+        add(chiUpButton);
         add(pengButton);
         add(gangButton);
+        add(cancelButton);
         add(huButton);
     }
 
@@ -63,13 +72,19 @@ class GamePanel extends JPanel {
         int buttonX = 512;
         int buttonY = 584; // 根據需要調整Y座標
 
-        chiButton.setBounds(buttonX + 80, buttonY, 60, 30);
-        pengButton.setBounds(buttonX + 160, buttonY, 60, 30);
-        gangButton.setBounds(buttonX + 240, buttonY, 60, 30);
-        huButton.setBounds(buttonX + 320, buttonY, 60, 30);
-        chiButton.setVisible(true);
+        chiLowButton.setBounds(buttonX + 80, buttonY, 90, 30);
+        chiMidButton.setBounds(buttonX + 160, buttonY, 90, 30);
+        chiUpButton.setBounds(buttonX + 240, buttonY, 90, 30);
+        pengButton.setBounds(buttonX + 160, buttonY - 40, 60, 30);
+        gangButton.setBounds(buttonX + 240, buttonY - 40, 60, 30);
+        cancelButton.setBounds(buttonX + 160, buttonY + 40, 60, 30);
+        huButton.setBounds(buttonX + 80, buttonY - 40, 60, 30);
+        chiLowButton.setVisible(true);
+        chiMidButton.setVisible(true);
+        chiUpButton.setVisible(true);
         pengButton.setVisible(true);
         gangButton.setVisible(true);
+        cancelButton.setVisible(true);
         huButton.setVisible(true);
         repaint();
     }
