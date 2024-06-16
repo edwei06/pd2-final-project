@@ -3,8 +3,8 @@ package mahjong.main.game.action;
 import java.util.ArrayList;
 
 public class ActionSet {
-    public ArrayList<Action> avaliableActions = new ArrayList<Action>();
-    public Action chosenAction;
+    public ArrayList<Action> avaliableActions = new ArrayList<Action>(); //能夠做的指令
+    public Action chosenAction; //選擇要做的指令
     
     public ArrayList<Action> getAvaliableAcitons(){
         return avaliableActions;
@@ -12,6 +12,18 @@ public class ActionSet {
 
     public Action getChosenAction(){
         return chosenAction;
+    }
+
+    public void setChosenAction(Action action){
+        this.chosenAction = action;
+    }
+
+    public void avaliableActionsClaer(){
+        this.avaliableActions.clear();
+    }
+
+    public void chosenActionClear(){
+        this.chosenAction = null;
     }
 
     @Override

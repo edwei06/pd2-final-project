@@ -78,6 +78,6 @@ public class Server implements Runnable{
 
     // server to one client
     public void sendUpdates(ClientHandler clientHandler){
-        clientHandler.sendUpdate(game.getActions());
+        clientHandler.sendUpdate(game.getPlayer(clientHandler.clientId));
     }
 }
