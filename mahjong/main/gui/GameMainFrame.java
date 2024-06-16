@@ -38,7 +38,7 @@ public class GameMainFrame extends JFrame {
         Timer timer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gamePanel.showControlButtons();
+                gamePanel.control.showCancelButton();
             }
         });
         timer.setRepeats(false); // 只執行一次

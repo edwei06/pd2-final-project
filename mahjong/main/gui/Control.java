@@ -2,13 +2,13 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class ControlPanel extends JPanel {
+class Control{
     private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
     private GamePanel gamePanel;
     private int buttonX = 512;
     private int buttonY = 584;
 
-    public ControlPanel(GamePanel gamePanel) {
+    public Control(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
         initButton();
     }
@@ -38,7 +38,7 @@ class ControlPanel extends JPanel {
         gamePanel.add(cancelButton);
         gamePanel.add(huButton);
     }
-
+    // detect if button is clicked and react to it
     private JButton createButton(String text) {
         JButton button = new JButton(text);
         button.addActionListener(new ActionListener() {
