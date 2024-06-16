@@ -15,6 +15,7 @@ class GamePanel extends JPanel {
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
+    private List<JButton> playerTileButtons;
     static final int TILE_WIDTH = 40;
     static final int TILE_HEIGHT = 56;
     static final int SMALL_TILE_WIDTH = 30;
@@ -27,7 +28,7 @@ class GamePanel extends JPanel {
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
 
-    private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
+    private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton, replaceTileButton;
 
     private List<String> discardedTiles; // 用于保存打出的牌
     private List<String> rightPlayerDiscardedTiles;
@@ -39,17 +40,80 @@ class GamePanel extends JPanel {
     public GamePanel() {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
-        setBackground(new Color(34, 139, 34));  // 深綠色背景模擬麻將桌
-        // initControlButtons();
-        // controlPanel = new ControlPanel();
-        // add(controlPanel);
+        setBackground(new Color(34, 139, 34));  // Deep green background to simulate a Mahjong table
 
         discardedTiles = new ArrayList<>();
         rightPlayerDiscardedTiles = new ArrayList<>();
         topPlayerDiscardedTiles = new ArrayList<>();
         leftPlayerDiscardedTiles = new ArrayList<>();
+        playerTileButtons = new ArrayList<>();  // Initialize the playerTileButtons list
+
         loadTileImages();
-        simulateDrawTile(); 
+        simulateDrawTile();
+        initializePlayerTileButtons();
+    }
+
+    private void initializePlayerTileButtons() {
+        int x = 130;
+        int y = 650;
+        for (int i = 0; i < playerTiles.size(); i++) {
+            JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+            playerTileButtons.add(tileButton);
+            add(tileButton);
+        }
+    }
+
+    private JButton createTileButton(String tile, int x, int y) {
+        ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
+        Image scaledImage = originalIcon.getImage().getScaledInstance(40, 56, Image.SCALE_SMOOTH);
+        ImageIcon scaledIcon = new ImageIcon(scaledImage);
+        
+        JButton tileButton = new JButton(scaledIcon);
+        tileButton.setBounds(x, y, 40, 56);
+        tileButton.setFocusPainted(false);
+        tileButton.setContentAreaFilled(false);
+        tileButton.setBorderPainted(false);
+
+        tileButton.addActionListener(e -> handleTileClick(tile));
+
+        tileButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                tileButton.setBounds(x, y - 20, 40, 56);  // Move up when hovered
+            }
+
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                tileButton.setBounds(x, y, 40, 56);  // Move back when not hovered
+            }
+        });
+
+        return tileButton;
+    }
+
+    private void handleTileClick(String tile) {
+        discardedTiles.add(tile);
+        playerTiles.remove(tile);
+        simulateDrawTile(); // Simulate drawing a new tile
+        updatePlayerTileButtons();
+        repaint();
+        simulateOtherPlayersDiscard(tile);
+    }
+
+    private void updatePlayerTileButtons() {
+        for (JButton button : playerTileButtons) {
+            remove(button);
+        }
+        playerTileButtons.clear();
+
+        int x = 130;
+        int y = 650;
+        for (int i = 0; i < playerTiles.size(); i++) {
+            JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+            playerTileButtons.add(tileButton);
+            add(tileButton);
+        }
+
+        revalidate();
+        repaint();
     }
 
     private void loadTileImages() {
@@ -69,11 +133,6 @@ class GamePanel extends JPanel {
         }
     }
     
-    /*
-    public void showControlButtons(){
-        controlPanel.showCancelButton();
-    }
-    */
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -81,7 +140,7 @@ class GamePanel extends JPanel {
         drawGridLines(g);
         // 繪製麻將桌和牌
         drawTable(g);
-        drawPlayerTiles(g);
+        // drawPlayerTiles(g);
         drawOtherPlayersTiles(g);
         drawEatenTiles(g);
         drawDiscardedTiles(g);
@@ -160,7 +219,6 @@ class GamePanel extends JPanel {
             transform.rotate(Math.toRadians(rotate), x + width / 2.0, y + height / 2.0);
             g2d.setTransform(transform);
             g2d.drawImage(tileImage, x, y, width, height, this);
-            //System.out.println(x);
             g2d.setTransform(originalTransform);
             g2d.dispose();
         }
@@ -287,7 +345,7 @@ class GamePanel extends JPanel {
 
     private void simulateDrawTile() {
         // 模擬從後端抽一張新牌
-        String[] possibleTiles = {"1筒", "2筒", "3筒", "4筒", "5筒", "6筒", "7筒", "8筒", "9筒", "1條", "2條", "3條", "4條"};
+        String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
         Random rand = new Random();
         String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
         playerTiles.add(newTile);
