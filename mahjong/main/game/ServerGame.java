@@ -25,7 +25,7 @@ public class ServerGame {
             for(int tileNumber = 0; tileNumber<16; tileNumber++){
                 tempTile.add(draw());
             }
-            this.initialTileHands.put(playerId, tempTile));
+            this.initialTileHands.put(playerId, tempTile);
         }
     }
 
