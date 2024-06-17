@@ -46,7 +46,7 @@ class Control {
         return button;
     }
 
-    private void hideAllButtons() {
+    public void hideAllButtons() {
         chiLowButton.setVisible(false);
         chiMidButton.setVisible(false);
         chiUpButton.setVisible(false);
@@ -56,7 +56,7 @@ class Control {
         huButton.setVisible(false);
     }
 
-    private void disableAllButtons() {
+    public void disableAllButtons() {
         chiLowButton.setEnabled(false);
         chiMidButton.setEnabled(false);
         chiUpButton.setEnabled(false);
@@ -66,7 +66,7 @@ class Control {
         huButton.setEnabled(false);
     }
 
-    private void enableButton(JButton button) {
+    public void enableButton(JButton button) {
         disableAllButtons(); // 禁用所有按鈕
         button.setEnabled(true); // 啟用當前按鈕
     }

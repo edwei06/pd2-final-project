@@ -12,6 +12,7 @@ import java.util.Random;
 import javax.swing.*;
 
 class GamePanel extends JPanel {
+    this.clientGame = clientGame;
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
@@ -83,7 +84,41 @@ class GamePanel extends JPanel {
             add(tileButton);
         }
     }
-
+    public void updateGamePanel() {
+        ActionSet actionSet = clientGame.getPlayer().getActionSet();  // Assuming Player has a method to get ActionSet
+        List<Action> availableActions = actionSet.getAvaliableAcitons();
+    
+        control.hideAllButtons();
+    
+        for (Action action : availableActions) {
+            switch (action) {
+                case LOWWERCHOW:
+                    control.showChiLowButton();
+                    break;
+                case MIIDLECHOW:
+                    control.showChiMidButton();
+                    break;
+                case UPPERCHOW:
+                    control.showChiUpButton();
+                    break;
+                case PONG:
+                    control.showpongButton();
+                    break;
+                case KONG:
+                    control.showGangButton();
+                    break;
+                case MAHJONG:
+                    control.showHuButton();
+                    break;
+                case DISCARD:
+                    // Handle DISCARD action if needed
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
+    
     private void initializeTilesLeftButton() {
         tilesLeftButton = new JButton(String.valueOf(totalTilesLeft));
         tilesLeftButton.setBounds(430, 300, 80, 80);  // Position it in the middle and make it a circle
