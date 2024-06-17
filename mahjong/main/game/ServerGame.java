@@ -14,6 +14,8 @@ public class ServerGame {
     private int NowPlayer = 0;
     public ArrayList<Tile> tiles;
     private TreeMap<Integer, Player> players;
+    private int maxPriority;
+    public Player actPlayer;
 
 
     private ArrayList<Tile> initTiles(){

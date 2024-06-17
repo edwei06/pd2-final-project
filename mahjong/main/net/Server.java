@@ -63,6 +63,7 @@ public class Server implements Runnable{
 
     public void startGameLoop(){
         // TODO :實作或呼叫tick() 讓他進行資訊更新
+        
     }
 
     public void processPacket(final ClientHandler clientHandler, final ClientPocket pocket){
