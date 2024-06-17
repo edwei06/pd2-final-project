@@ -7,12 +7,12 @@ import mahjong.main.game.action.Action;
 
 class Control {
     private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
-    private GamePanel gamePanel;
+    private ClientGamePanel gamePanel;
     private ActionSet actionSet;
     private int buttonX = 512;
     private int buttonY = 584;
 
-    public Control(GamePanel gamePanel) {
+    public Control(ClientGamePanel gamePanel) {
         this.gamePanel = gamePanel;
         this.actionSet = actionSet;
         initButton();
