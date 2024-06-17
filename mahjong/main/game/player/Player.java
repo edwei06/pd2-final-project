@@ -10,21 +10,27 @@ import mahjong.main.game.action.ActionSet;
 public class Player {
     private ArrayList<Tile> handTiles; //手牌
     private ActionSet actionSet; //動作指令(吃、碰、槓、胡)
-    private TreeMap<Integer ,ArrayList<Tile[]>> eatenTiles; //吃碰槓牌堆
+    private TreeMap<Integer ,ArrayList<Tile[]>> playersEatenTiles; //吃碰槓牌堆
     private ArrayList<Tile[]> eatenTileArray;
     private Tile discardTile; //要丟的牌
     private Tile tileDrawn; //抽到的牌
     private int playerId;
-    public TreeMap<Integer,ArrayList<Tile>> discardedTiles;
+    public TreeMap<Integer,ArrayList<Tile>> playersDiscardedTiles;
 
     public Player(ArrayList<Tile> tiles, int playerId){
-        this.eatenTiles = new TreeMap<>();
-        this.eatenTileArray = new ArrayList<>();
+        this.playersEatenTiles = new TreeMap<Integer ,ArrayList<Tile[]>>();
+        this.eatenTileArray = new ArrayList<Tile[]>();
         this.actionSet = new ActionSet();
         this.handTiles = tiles;
         this.playerId = playerId;
-        this.discardedTiles=new TreeMap<>();
+        this.playersDiscardedTiles=new TreeMap<Integer,ArrayList<Tile>>();
     }
+
+    public void updateEatenAndDiscardedTiles(TreeMap<Integer ,ArrayList<Tile[]>> newEatenTiles, TreeMap<Integer,ArrayList<Tile>> newDiscardedTiles){
+        this.playersDiscardedTiles = newDiscardedTiles;
+        this.playersEatenTiles = newEatenTiles;
+    }
+
     //用來回傳此玩家的Priority
     public int getPriority(){
         Action chosenAction = actionSet.getChosenAction();
@@ -102,7 +108,7 @@ public class Player {
             }
 
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);           
+            playersEatenTiles.put(getPlayerId(),eatenTileArray);           
         }
         else if (actionSet.getChosenAction()==Action.PONG) {
             Tile[] tileArray = new Tile[4];
@@ -113,7 +119,7 @@ public class Player {
                handTiles.remove(tileDrawn); 
             }
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);
+            playersEatenTiles.put(getPlayerId(),eatenTileArray);
             actionSet.getAvaliableAcitons().clear();
             actionSet.getAvaliableAcitons().add(Action.DISCARD);
         }
@@ -129,7 +135,7 @@ public class Player {
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);
+            playersEatenTiles.put(getPlayerId(),eatenTileArray);
         }
         else if (actionSet.getChosenAction()==Action.MIIDLECHOW) {
             Tile[] tileArray = new Tile[4];
@@ -142,7 +148,7 @@ public class Player {
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);
+            playersEatenTiles.put(getPlayerId(),eatenTileArray);
         }
         else if (actionSet.getChosenAction()==Action.UPPERCHOW) {
             Tile[] tileArray = new Tile[4];
@@ -155,13 +161,13 @@ public class Player {
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);
+            playersEatenTiles.put(getPlayerId(),eatenTileArray);
         }
     }
 
     public void addEatenTiles(Tile[] eatenTiles){
         this.eatenTileArray.add(eatenTiles);
-        this.eatenTiles.put(getPlayerId(),eatenTileArray);
+        this.playersEatenTiles.put(getPlayerId(),eatenTileArray);
     }
 
     public void addAction(Action action){
