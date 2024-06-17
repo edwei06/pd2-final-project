@@ -85,7 +85,7 @@ public class ServerGame {
                 actPlayer = player;
             }
         }
-
+        actPlayer.updateHandTile();
         if(maxPriority == 0) { //無人需要操作
             players.get(nowPlayer).drawTile(draw());
         }else if(maxPriority == 1){ // 有人要打牌(打牌時只會有一個人有動作)
@@ -93,12 +93,14 @@ public class ServerGame {
                 // 更新其他玩家的avaliableActions及drawnTile
                 if(player.equals(actPlayer)) continue;
                 player.drawFromOther(actPlayer.getDiscardTile(), nowPlayer);
+                player.updateEatenAndDiscardedTiles(actPlayer.getPlayersEatenTiles(), actPlayer.getPlayersDiscardedTiles());
             }
             nowPlayer ++;
         }else{ // 吃、碰、槓、胡才要處理其他玩家的資訊
             for(Player player : players.values()){
                 if(player.equals(actPlayer)) continue;
                 player.setTileDrawn(null);
+                player.updateEatenAndDiscardedTiles(actPlayer.getPlayersEatenTiles(), actPlayer.getPlayersDiscardedTiles());
             }
             if(maxPriority == 4){ //槓牌要抽一張
                 actPlayer.drawTile(draw());
@@ -107,7 +109,6 @@ public class ServerGame {
             }
             nowPlayer = actPlayer.getPlayerId();
         }
-        actPlayer.updateHandTile();
     }
 
     public boolean getCloseGame(){

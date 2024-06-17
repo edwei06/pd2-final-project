@@ -15,7 +15,7 @@ public class Player {
     private Tile discardTile; //要丟的牌
     private Tile tileDrawn; //抽到的牌
     private int playerId;
-    public TreeMap<Integer,ArrayList<Tile>> playersDiscardedTiles;
+    private TreeMap<Integer,ArrayList<Tile>> playersDiscardedTiles;
 
     public Player(ArrayList<Tile> tiles, int playerId){
         this.playersEatenTiles = new TreeMap<Integer ,ArrayList<Tile[]>>();
@@ -24,6 +24,13 @@ public class Player {
         this.handTiles = tiles;
         this.playerId = playerId;
         this.playersDiscardedTiles=new TreeMap<Integer,ArrayList<Tile>>();
+    }
+
+    public TreeMap<Integer,ArrayList<Tile>> getPlayersDiscardedTiles(){
+        return this.playersDiscardedTiles;
+    }
+    public TreeMap<Integer ,ArrayList<Tile[]>> getPlayersEatenTiles(){
+        return this.playersEatenTiles;
     }
 
     public void updateEatenAndDiscardedTiles(TreeMap<Integer ,ArrayList<Tile[]>> newEatenTiles, TreeMap<Integer,ArrayList<Tile>> newDiscardedTiles){
