@@ -1,6 +1,6 @@
 # This is the PD2 final project-mahjong
 # Contributers ：魏豪豪、涂倫倫、劉辰辰
-[Untitled.pdf](https://github.com/user-attachments/files/15876938/Untitled.pdf)
+[flowchart.pdf](https://github.com/user-attachments/files/15876938/Untitled.pdf)
 
 ## 1. Requirements Gathering
 * Connectivity: Determine how players will connect to the host player's server.
