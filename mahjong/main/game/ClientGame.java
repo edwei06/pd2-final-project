@@ -46,14 +46,13 @@ public class ClientGame {
         int actionChoose = Integer.parseInt(scanner.nextLine());
         if(actionChoose == 9){
             this.player.getActionSet().setChosenAction(null);
-        }else if(actionChoose == 1){
-            System.out.println("22222222222222");
+            return;
+        }else if(actionChoose == 0){
             this.player.setDiscardTile(this.player.getTileDrawn());
         }
-        else{
-            System.out.println(avaliableActions.get(actionChoose));
-            this.player.getActionSet().setChosenAction(avaliableActions.get(actionChoose));
-        }
+        System.out.println(avaliableActions.get(actionChoose));
+        this.player.getActionSet().setChosenAction(avaliableActions.get(actionChoose));
+        
     }
 
     public ActionSet getActionSet(){

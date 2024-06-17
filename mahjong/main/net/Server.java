@@ -5,11 +5,13 @@ import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 import mahjong.main.game.ServerGame;
 import mahjong.main.net.packet.ClientPacket;
 import mahjong.main.net.packet.DisconnetPacket;
 import mahjong.main.net.packet.PlayerPacket;
+
 
 /**
  * <p>
@@ -23,16 +25,19 @@ import mahjong.main.net.packet.PlayerPacket;
  * </p>
  */
 public class Server implements Runnable{
+    boolean isRunning;
     private final ServerGame game;
     private ServerSocket serverSocket;
     private final ArrayList<ClientHandler> clientHandlers;
     private int connetingClientNumber = 0;
     private boolean gameStarting = false;
+    private CountDownLatch latch;
 
     public Server (ServerGame game , final int port){
         this.game = game;
         try{
             this.serverSocket = new ServerSocket(port);
+            this.isRunning = true;
             System.out.println("Server is open!!");
             System.out.println("ip is :" + InetAddress.getLocalHost().getHostAddress() + " , port is :" + port);
         }catch(IOException e){
@@ -84,15 +89,19 @@ public class Server implements Runnable{
     }
 
     public void startGameLoop(){
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        sendUpdatesToAll();
-        game.updateServerGame();
-        if(game.getCloseGame()){
-            closeServer();
+        while(gameStarting){
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            sendUpdatesToAll();
+            game.updateServerGame();
+            if(game.getCloseGame()){
+                closeServer();
+            }
+            if(game.tiles.size() == 0) closeServer();
+            else System.out.println("remaining tiles :" +game.tiles.size());
         }
     }
 
@@ -106,15 +115,21 @@ public class Server implements Runnable{
                 e.printStackTrace();
             }
         }
-
+        latch.countDown();
     }
 
     // server to all client
     public void sendUpdatesToAll(){
+        latch = new CountDownLatch(clientHandlers.size());
         for(ClientHandler clientHandler : clientHandlers){
             sendUpdates(clientHandler);
             // wait client reply packet
-            while(!clientHandler.replied);
+            //while(!clientHandler.replied);
+        }
+        try {
+            latch.await();  // 等待所有客户端调用 countDown()
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
