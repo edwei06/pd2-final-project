@@ -2,7 +2,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-class Control{
+class Control {
     private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
     private GamePanel gamePanel;
     private int buttonX = 512;
@@ -22,13 +22,7 @@ class Control{
         cancelButton = createButton("取消");
         huButton = createButton("胡");
 
-        chiLowButton.setVisible(false);
-        chiMidButton.setVisible(false);
-        chiUpButton.setVisible(false);
-        pongButton.setVisible(false);
-        gangButton.setVisible(false);
-        cancelButton.setVisible(false);
-        huButton.setVisible(false);
+        hideAllButtons();
 
         gamePanel.add(chiLowButton);
         gamePanel.add(chiMidButton);
@@ -38,51 +32,84 @@ class Control{
         gamePanel.add(cancelButton);
         gamePanel.add(huButton);
     }
-    // detect if button is clicked and react to it
+
     private JButton createButton(String text) {
         JButton button = new JButton(text);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                button.setVisible(false);
+                hideAllButtons();
+                button.setEnabled(true); // 保證按鈕再次顯示時是可用的
                 System.out.println(button.getText() + " 按鈕被點擊並隱藏");
             }
         });
         return button;
     }
 
+    private void hideAllButtons() {
+        chiLowButton.setVisible(false);
+        chiMidButton.setVisible(false);
+        chiUpButton.setVisible(false);
+        pongButton.setVisible(false);
+        gangButton.setVisible(false);
+        cancelButton.setVisible(false);
+        huButton.setVisible(false);
+    }
+
+    private void disableAllButtons() {
+        chiLowButton.setEnabled(false);
+        chiMidButton.setEnabled(false);
+        chiUpButton.setEnabled(false);
+        pongButton.setEnabled(false);
+        gangButton.setEnabled(false);
+        cancelButton.setEnabled(false);
+        huButton.setEnabled(false);
+    }
+
+    private void enableButton(JButton button) {
+        disableAllButtons(); // 禁用所有按鈕
+        button.setEnabled(true); // 啟用當前按鈕
+    }
+
     public void showChiLowButton() {
         chiLowButton.setBounds(buttonX + 80, buttonY, 90, 30);
         chiLowButton.setVisible(true);
+        enableButton(chiLowButton);
     }
 
     public void showChiMidButton() {
         chiMidButton.setBounds(buttonX + 160, buttonY, 90, 30);
         chiMidButton.setVisible(true);
+        enableButton(chiMidButton);
     }
 
     public void showChiUpButton() {
         chiUpButton.setBounds(buttonX + 240, buttonY, 90, 30);
         chiUpButton.setVisible(true);
+        enableButton(chiUpButton);
     }
 
     public void showpongButton() {
         pongButton.setBounds(buttonX + 160, buttonY - 40, 60, 30);
         pongButton.setVisible(true);
+        enableButton(pongButton);
     }
 
     public void showGangButton() {
         gangButton.setBounds(buttonX + 240, buttonY - 40, 60, 30);
         gangButton.setVisible(true);
+        enableButton(gangButton);
     }
 
     public void showCancelButton() {
         cancelButton.setBounds(buttonX + 160, buttonY + 40, 60, 30);
         cancelButton.setVisible(true);
+        enableButton(cancelButton);
     }
 
     public void showHuButton() {
         huButton.setBounds(buttonX + 80, buttonY - 40, 60, 30);
         huButton.setVisible(true);
+        enableButton(huButton);
     }
 }
