@@ -1,26 +1,32 @@
+package mahjong.main.gui.client;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import mahjong.main.game.action.ActionSet;
+import mahjong.main.game.action.Action;
 
 class Control {
     private JButton chiLowButton, chiMidButton, chiUpButton, pongButton, gangButton, cancelButton, huButton;
     private GamePanel gamePanel;
+    private ActionSet actionSet;
     private int buttonX = 512;
     private int buttonY = 584;
 
     public Control(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
+        this.actionSet = actionSet;
         initButton();
     }
 
     public void initButton() {
-        chiLowButton = createButton("吃第一張");
-        chiMidButton = createButton("吃中間張");
-        chiUpButton = createButton("吃最後張");
-        pongButton = createButton("碰");
-        gangButton = createButton("槓");
-        cancelButton = createButton("取消");
-        huButton = createButton("胡");
+        chiLowButton = createButton("吃第一張", Action.LOWWERCHOW);
+        chiMidButton = createButton("吃中間張", Action.MIIDLECHOW);
+        chiUpButton = createButton("吃最後張", Action.UPPERCHOW);
+        pongButton = createButton("碰", Action.PONG);
+        gangButton = createButton("槓", Action.KONG);
+        cancelButton = createButton("取消", null); // Cancel action does not map to an Action
+        huButton = createButton("胡", Action.MAHJONG);
+
 
         hideAllButtons();
 
@@ -33,14 +39,17 @@ class Control {
         gamePanel.add(huButton);
     }
 
-    private JButton createButton(String text) {
+    private JButton createButton(String text, Action action) {
         JButton button = new JButton(text);
         button.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 hideAllButtons();
+                if (action != null) {
+                    actionSet.setChosenAction(action);
+                    System.out.println(action + " 按鈕被點擊並設置為選擇的動作");
+                }
                 button.setEnabled(true); // 保證按鈕再次顯示時是可用的
-                System.out.println(button.getText() + " 按鈕被點擊並隱藏");
             }
         });
         return button;
