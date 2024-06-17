@@ -1,5 +1,5 @@
 # This is the PD2 final project-mahjong
-# Contributers ：魏豪豪、涂倫倫、劉辰辰
+# Contributers ：魏靖豪、譚詠祺、涂睿倫、劉奕辰
 [flowchart.pdf](https://github.com/user-attachments/files/15876938/Untitgled.pdf)
 ![image](https://github.com/edwei06/pd2-final-project/assets/80562201/b26b03e2-dbc3-4de2-b61e-8b4ea8db63a6)
 
