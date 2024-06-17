@@ -25,6 +25,16 @@ public class Player {
         this.playerId = playerId;
         this.discardedTiles=new TreeMap<>();
     }
+
+    public int getPriority(){
+        Action chosenAction = actionSet.getChosenAction();
+        if(chosenAction.toString().contains("CHOW")) return 1;
+        else if (chosenAction.equals(Action.PONG)) return 2;
+        else if(chosenAction.equals(Action.KONG)) return 3;
+        else if (chosenAction.equals(Action.MAHJONG)) return 4;
+        else return 0;
+    }
+
     public void drawFromOther(Tile tile,int discardedPlayerID){
         boolean Kong=ActionLogic.canKong(handTiles, tile);
         boolean Win=ActionLogic.canWin(handTiles, tile);
@@ -56,6 +66,7 @@ public class Player {
             actionSet.avaliableActions.add(Action.UPPERCHOW);
         }
     }
+
     public void drawTile(Tile tile){
         //判斷tile跟handTile的關係 ex. canKONG canMAJONG
         // 修改Player的ActionSet

@@ -1,3 +1,5 @@
+package mahjong.main.gui.client;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,7 +14,7 @@ import java.util.Random;
 import javax.swing.*;
 // import mahjong.main.game.ClientGame;
 
-class GamePanel extends JPanel {
+public class ClientGamePanel extends JPanel {
     // private ClientGame clientGame;
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
@@ -50,7 +52,7 @@ class GamePanel extends JPanel {
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
 
-    public GamePanel() {
+    public ClientGamePanel() {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // Deep green background to simulate a Mahjong table

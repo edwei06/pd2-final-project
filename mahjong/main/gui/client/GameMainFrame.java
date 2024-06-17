@@ -1,3 +1,5 @@
+package mahjong.main.gui.client;
+
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
@@ -6,7 +8,7 @@ import javax.swing.*;
 public class GameMainFrame extends JFrame {
     private JPanel mainPanel;
     private CardLayout cardLayout;
-    private GamePanel gamePanel;
+    private ClientGamePanel gamePanel;
     private Login loginPanel;
 
     public GameMainFrame() {
@@ -24,7 +26,7 @@ public class GameMainFrame extends JFrame {
         mainPanel = new JPanel(cardLayout);
 
         loginPanel = new Login(this);
-        gamePanel = new GamePanel();
+        gamePanel = new ClientGamePanel();
 
         mainPanel.add(loginPanel, "Login");
         mainPanel.add(gamePanel, "Game");
