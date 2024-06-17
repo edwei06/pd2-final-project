@@ -9,8 +9,8 @@
 * 透過.java檔之間的物件交流來實現玩家間的手牌、吃牌堆的新
 * 創建一個server讓4個客戶端可以共同遊玩
 * 使用socket做client與server間的資訊交流
-## 3. 遊戲物件實作:
-* 利用物件管理來建立手牌、牌堆等不同物件並分別實作各物件下的操作邏輯與管理方法
+## 3. 分工與實作:
+* 
 ## 4. 網路連接與管理:
 * 在Client Class 主要用於從Server接收遊戲數據並更新GUI
 * ClientHandler Class 用於在Server端處理每個客戶端的交流，每個Client都會有對應的ClientHandler 實例
