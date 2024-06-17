@@ -10,7 +10,10 @@
 * 創建一個server讓4個客戶端可以共同遊玩
 * 使用socket做client與server間的資訊交流
 ## 3. 分工與實作:
-* 
+* 涂睿倫:製作GameServer與Client的串接
+* 譚永祺:製作後端邏輯
+* 魏靖豪:製作Client gui
+* 劉奕辰:製作Server gui
 ## 4. 網路連接與管理:
 * 在Client Class 主要用於從Server接收遊戲數據並更新GUI
 * ClientHandler Class 用於在Server端處理每個客戶端的交流，每個Client都會有對應的ClientHandler 實例
