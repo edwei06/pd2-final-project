@@ -10,6 +10,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
+import java.util.TreeMap;
+import mahjong.main.game.action.Action;
+import mahjong.main.game.action.ActionSet;
+import mahjong.main.game.player.*;
 // import mahjong.main.game.ClientGame;
 
 class GamePanel extends JPanel {
@@ -49,7 +53,43 @@ class GamePanel extends JPanel {
 
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
+    public static void main(String[] args){
+        Tile tile1 = new Tile("Wong", 1);
+        Tile tile2 = new Tile("Wong", 1);
+        Tile tile3 = new Tile("Wong", 1);
+        Tile tile4 = new Tile("Wong", 3);
+        Tile tile5 = new Tile("Wong", 3);
+        Tile tile6 = new Tile("Wong", 3);
+        Tile tile7 = new Tile("Wong", 4);
+        Tile tile8 = new Tile("Wong", 4);
+        Tile tile9 = new Tile("Wong", 4);
+        Tile tile10 = new Tile("Wong", 5);
+        Tile tile11 = new Tile("Wong", 5);
+        Tile tile12 = new Tile("Wong", 5);
+        Tile tile13 = new Tile("Wong", 7);
 
+        // 將這些牌添加到玩家的手牌中
+        ArrayList<Tile> handTiles = new ArrayList<>();
+        handTiles.add(tile1);
+        handTiles.add(tile2);
+        handTiles.add(tile3);
+        handTiles.add(tile4);
+        handTiles.add(tile5);
+        handTiles.add(tile6);
+        handTiles.add(tile7);
+        handTiles.add(tile8);
+        handTiles.add(tile9);
+        handTiles.add(tile10);
+        handTiles.add(tile11);
+        handTiles.add(tile12);
+        handTiles.add(tile13);
+
+        Tile determineTile = new Tile("Wong", 7);
+        Player player = new Player(handTiles, 1);
+        player.getActionSet().setChosenAction(Action.MAHJONG);
+        System.out.println(player.getActionSet().getChosenAction());
+        System.out.println(player.getActionSet().getAvaliableAcitons());
+    }
     public GamePanel() {
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
