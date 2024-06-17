@@ -21,5 +21,10 @@ public class ClientGame {
 
     public void processPlayer(Player updatePlayer){
         this.player = updatePlayer;
+        
+    }
+
+    public ActionSet getActionSet(){
+        return player.getActionSet();
     }
 }
