@@ -13,11 +13,7 @@ import javax.swing.*;
 // import mahjong.main.game.ClientGame;
 
 class GamePanel extends JPanel {
-<<<<<<< HEAD
     // private ClientGame clientGame;
-=======
-    private ClientGame clientGame;
->>>>>>> be8609274dfff6881e0f81bf8a1896077a47e238
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
