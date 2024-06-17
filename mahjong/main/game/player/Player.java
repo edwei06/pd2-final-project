@@ -25,6 +25,17 @@ public class Player {
         this.playerId = playerId;
         this.discardedTiles=new TreeMap<>();
     }
+    //這是涂輪輪用來回傳Priority的
+    public int getPriority(){
+        Action chosenAction = actionSet.getChosenAction();
+        if(chosenAction.equals(Action.DISCARD)) return 1;
+        else if(chosenAction.toString().contains("CHOW")) return 2;
+        else if (chosenAction.equals(Action.PONG)) return 3;
+        else if(chosenAction.equals(Action.KONG)) return 4;
+        else if (chosenAction.equals(Action.MAHJONG)) return 5;
+        else return 0;
+    }
+    //這是用來判斷打牌之後人家要不要的
     public void drawFromOther(Tile tile,int discardedPlayerID){
         boolean Kong=ActionLogic.canKong(handTiles, tile);
         boolean Win=ActionLogic.canWin(handTiles, tile);
@@ -79,7 +90,7 @@ public class Player {
             handTiles.add(tileDrawn);
             handTiles.remove(discardTile);
         }
-        if (actionSet.getChosenAction()==Action.KONG) {
+        else if (actionSet.getChosenAction()==Action.KONG) {
             Tile[] tileArray = new Tile[4];
             tileArray[0]=tileDrawn;
             tileArray[1]=tileDrawn;
@@ -90,9 +101,9 @@ public class Player {
             }
 
             eatenTileArray.add(tileArray);
-            eatenTiles.put(getPlayerId(),eatenTileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);           
         }
-        if (actionSet.getChosenAction()==Action.PONG) {
+        else if (actionSet.getChosenAction()==Action.PONG) {
             Tile[] tileArray = new Tile[4];
             tileArray[0]=tileDrawn;
             tileArray[1]=tileDrawn;
@@ -102,9 +113,11 @@ public class Player {
             }
             eatenTileArray.add(tileArray);
             eatenTiles.put(getPlayerId(),eatenTileArray);
+            actionSet.getAvaliableAcitons().clear();
+            actionSet.getAvaliableAcitons().add(Action.DISCARD);
         }
 
-        if (actionSet.getChosenAction()==Action.LOWWERCHOW) {
+        else if (actionSet.getChosenAction()==Action.LOWWERCHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-2);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-1);
@@ -117,7 +130,7 @@ public class Player {
             eatenTileArray.add(tileArray);
             eatenTiles.put(getPlayerId(),eatenTileArray);
         }
-        if (actionSet.getChosenAction()==Action.MIIDLECHOW) {
+        else if (actionSet.getChosenAction()==Action.MIIDLECHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-1);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+1);
@@ -130,7 +143,7 @@ public class Player {
             eatenTileArray.add(tileArray);
             eatenTiles.put(getPlayerId(),eatenTileArray);
         }
-        if (actionSet.getChosenAction()==Action.UPPERCHOW) {
+        else if (actionSet.getChosenAction()==Action.UPPERCHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+1);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+2);
@@ -219,7 +232,21 @@ public class Player {
 
         // 創建玩家
         //Player player = new Player(handTiles, 0);
-        
+        //測試getPriority方法
+
+        /*player.getActionSet().setChosenAction(Action.DISCARD);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.LOWWERCHOW);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.MIIDLECHOW);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.PONG);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.KONG);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.MAHJONG);
+        System.out.println(player.getPriority());
+        */
         //測試drawFromOther方法
         /* 
         Player player0 = new Player(handTiles, 0);
@@ -278,11 +305,12 @@ public class Player {
             System.out.println(tile.suit+tile.rank);
         }
         System.out.println("@@@@@@@@@@");
-        for(Tile tile : player.eatenTiles.get(0)){
+        for(Tile tile : player.eatenTiles.get(0).get(0)){
             if (tile != null) {
                 System.out.println(tile.suit + tile.rank);
             }
-        }*/
+        }
+        System.out.println(player.actionSet.getAvaliableAcitons().get(0));*/
         //測試updateHandTile中的lowwerchow
         /*player.actionSet.chosenAction=Action.LOWWERCHOW;
         player.tileDrawn =new Tile("Wong", 6);
