@@ -6,12 +6,17 @@ import java.io.ObjectOutputStream;
 import java.net.Socket;
 
 import mahjong.main.game.player.Player;
-import mahjong.main.net.pocket.ClientPocket;
+import mahjong.main.net.packet.ClientPacket;
 
 /**
  * 屬於sever端用來處理client封包交流、處理等的class，
  * 並且一個client會有一個ClientHandler來處理
+ * @param clientSocket
+ * @param server
+ * @param playerId
+
  */
+
 public class ClientHandler implements Runnable{
     private boolean isRunning;
     public int clientId;
@@ -20,11 +25,10 @@ public class ClientHandler implements Runnable{
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
 
-    /**
-     * @param clientSocket
-     * @param server
-     * @param playerId
-     */
+    public int getClientId(){
+        return clientId;
+    }
+    
     public ClientHandler(final Socket clientSocket, final Server server, int playerId){
         this.server = server;
         this.clientSocket = clientSocket;   
@@ -39,6 +43,7 @@ public class ClientHandler implements Runnable{
 
         initialClientCommunication();
     }
+    
 
     private void initialClientCommunication(){
         try{
@@ -54,11 +59,12 @@ public class ClientHandler implements Runnable{
         isRunning = true;
         startRecieveMessageLoop();
     }  
+
     // client to server
     private void startRecieveMessageLoop(){
         while (isRunning) {
             try{
-            final ClientPocket pocket= (ClientPocket) inputStream.readObject();
+            final ClientPacket pocket= (ClientPacket) inputStream.readObject();
             server.processPacket(this, pocket);
             } catch (final IOException e){
                 e.printStackTrace();
@@ -68,7 +74,16 @@ public class ClientHandler implements Runnable{
         }
     }
 
+    // server to client 傳遞 Player
     public void sendUpdate(Player player){
-        // TODO 通過輸出流傳給client
+        if(!isRunning){
+            server.closeServer();
+        }
+        try{
+            outputStream.writeObject(player);
+            outputStream.reset();
+        }catch (final IOException e){
+            e.printStackTrace();
+        }
     }
 }
