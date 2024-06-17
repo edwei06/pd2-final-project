@@ -1,5 +1,6 @@
 package mahjong.main.game.player;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
@@ -7,7 +8,7 @@ import java.util.TreeMap;
 import mahjong.main.game.action.Action;
 import mahjong.main.game.action.ActionSet;
 
-public class Player {
+public class Player implements Serializable{
     private ArrayList<Tile> handTiles; //手牌
     private ActionSet actionSet; //動作指令(吃、碰、槓、胡)
     private TreeMap<Integer ,ArrayList<Tile[]>> playersEatenTiles; //吃碰槓牌堆
@@ -15,7 +16,7 @@ public class Player {
     private Tile discardTile; //要丟的牌
     private Tile tileDrawn; //抽到的牌
     private int playerId;
-    public TreeMap<Integer,ArrayList<Tile>> playersDiscardedTiles;
+    private TreeMap<Integer,ArrayList<Tile>> playersDiscardedTiles;
 
     public Player(ArrayList<Tile> tiles, int playerId){
         this.playersEatenTiles = new TreeMap<Integer ,ArrayList<Tile[]>>();
@@ -26,6 +27,13 @@ public class Player {
         this.playersDiscardedTiles=new TreeMap<Integer,ArrayList<Tile>>();
     }
 
+    public TreeMap<Integer,ArrayList<Tile>> getPlayersDiscardedTiles(){
+        return this.playersDiscardedTiles;
+    }
+    public TreeMap<Integer ,ArrayList<Tile[]>> getPlayersEatenTiles(){
+        return this.playersEatenTiles;
+    }
+
     public void updateEatenAndDiscardedTiles(TreeMap<Integer ,ArrayList<Tile[]>> newEatenTiles, TreeMap<Integer,ArrayList<Tile>> newDiscardedTiles){
         this.playersDiscardedTiles = newDiscardedTiles;
         this.playersEatenTiles = newEatenTiles;
@@ -34,7 +42,8 @@ public class Player {
     //用來回傳此玩家的Priority
     public int getPriority(){
         Action chosenAction = actionSet.getChosenAction();
-        if(chosenAction.equals(Action.DISCARD)) return 1;
+        if(chosenAction == null) return 0;
+        else if(chosenAction.equals(Action.DISCARD)) return 1;
         else if(chosenAction.toString().contains("CHOW")) return 2;
         else if (chosenAction.equals(Action.PONG)) return 3;
         else if(chosenAction.equals(Action.KONG)) return 4;

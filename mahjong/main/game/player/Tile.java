@@ -1,11 +1,16 @@
 package mahjong.main.game.player;
 
-public class Tile {
+import java.io.Serializable;
+
+public class Tile implements Serializable{
     public String suit;
     public int rank;
     public Tile(String suit, int rank) {
         this.suit = suit;
         this.rank = rank;
+    }
+    public String getTileString(){
+        return (getRank()+getSuit());
     }
 
     public String getSuit() {
