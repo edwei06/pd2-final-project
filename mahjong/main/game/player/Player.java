@@ -2,6 +2,7 @@ package mahjong.main.game.player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TreeMap;
 
 import mahjong.main.game.action.Action;
 import mahjong.main.game.action.ActionSet;
@@ -13,14 +14,46 @@ public class Player {
     private Tile discardTile; //要丟的牌
     private Tile tileDrawn; //抽到的牌
     private int playerId;
+    public TreeMap<Integer,ArrayList<Tile>> discardedTiles;
 
     public Player(ArrayList<Tile> tiles, int playerId){
         this.eatenTiles = new ArrayList<Tile[]>();
         this.actionSet = new ActionSet();
         this.handTiles = tiles;
         this.playerId = playerId;
+        this.discardedTiles=new TreeMap<>();
     }
-
+    public void drawFromOther(Tile tile,int discardedPlayerID){
+        boolean Kong=ActionLogic.canKong(handTiles, tile);
+        boolean Win=ActionLogic.canWin(handTiles, tile);
+        boolean Pong=ActionLogic.canPong(handTiles, tile);
+        boolean Chowwithlower=false;
+        boolean Chowwithmiddel=false;
+        boolean Chowwithupper=false;
+        if ((discardedPlayerID+1)%4-playerId==0){
+            Chowwithlower=ActionLogic.canChowWithLower(handTiles, tile);
+            Chowwithmiddel=ActionLogic.canChowWithMiddle(handTiles, tile);
+            Chowwithupper=ActionLogic.canChowWithUpper(handTiles, tile);
+        }
+        if (Kong) {
+            actionSet.avaliableActions.add(Action.KONG);
+        }
+        if (Win) {
+            actionSet.avaliableActions.add(Action.MAHJONG);
+        }
+        if (Pong) {
+            actionSet.avaliableActions.add(Action.PONG);
+        }
+        if (Chowwithlower) {
+            actionSet.avaliableActions.add(Action.LOWWERCHOW);
+        }
+        if (Chowwithmiddel) {
+            actionSet.avaliableActions.add(Action.MIIDLECHOW);
+        }
+        if (Chowwithupper) {
+            actionSet.avaliableActions.add(Action.UPPERCHOW);
+        }
+    }
     public void drawTile(Tile tile){
         //判斷tile跟handTile的關係 ex. canKONG canMAJONG
         // 修改Player的ActionSet
@@ -32,9 +65,8 @@ public class Player {
         if (Win) {
             actionSet.avaliableActions.add(Action.MAHJONG);
         }
-        if(!Win&&!Kong){
-            actionSet.avaliableActions.add(Action.DISCARD);
-        }
+        
+        actionSet.avaliableActions.add(Action.DISCARD);
         setTileDrawn(tile);
     }
 
@@ -177,10 +209,20 @@ public class Player {
         handTiles.add(tile13);
 
         // 創建玩家
-        Player player = new Player(handTiles, 1);
+        //Player player0 = new Player(handTiles, 0);
+        
+        //測試drawFromOther方法
+        /* 
+        Player player0 = new Player(handTiles, 0);
+        Player player1 = new Player(handTiles, 1);
+        Tile testTile = new Tile("Wong", 5);
+        player1.drawFromOther( testTile, 3);
+        System.out.println(player1.getActionSet().getAvaliableAcitons()); */
+        
 
         // 要判斷的目標牌
         //Tile determineTile = new Tile("Wong", 7);
+        //Player player = new Player(handTiles, 1);
 
         // 測試 canWin 方法
         /*boolean canWinResult = ActionLogic.canWin(player.getHandTiles(), determineTile);

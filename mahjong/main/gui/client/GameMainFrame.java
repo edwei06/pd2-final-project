@@ -1,32 +1,41 @@
-package sever;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import javax.swing.JFrame;
 
-public class MahjongGame extends JFrame {
+
+public class GameMainFrame extends JFrame {
+    private JPanel mainPanel;
+    private CardLayout cardLayout;
     private GamePanel gamePanel;
+    private Login loginPanel;
 
-    public MahjongGame() {
+    public GameMainFrame() {
         setTitle("Mahjong Game");
         setSize(1024, 768);
         setResizable(false);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-        initUI();
         
+        initUI();
     }
 
     private void initUI() {
-        JPanel mainPanel = new JPanel();
-        mainPanel.setLayout(new BorderLayout());
+        cardLayout = new CardLayout();
+        mainPanel = new JPanel(cardLayout);
 
+        loginPanel = new Login(this);
         gamePanel = new GamePanel();
-        mainPanel.add(gamePanel, BorderLayout.CENTER);
+
+        mainPanel.add(loginPanel, "Login");
+        mainPanel.add(gamePanel, "Game");
 
         add(mainPanel);
+        
+        cardLayout.show(mainPanel, "Login");  // Show login panel first
+    }
 
-        // 模擬後端信號
+    public void showGamePanel() {
+        cardLayout.show(mainPanel, "Game");
         simulateBackendSignal();
     }
 
@@ -35,7 +44,7 @@ public class MahjongGame extends JFrame {
         Timer timer = new Timer(3000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                gamePanel.showControlButtons();
+                gamePanel.control.showCancelButton();
             }
         });
         timer.setRepeats(false); // 只執行一次
@@ -44,7 +53,7 @@ public class MahjongGame extends JFrame {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            MahjongGame game = new MahjongGame();
+            GameMainFrame game = new GameMainFrame();
             game.setVisible(true);
         });
     }
