@@ -18,9 +18,10 @@ import mahjong.main.game.player.*;
 
 class GamePanel extends JPanel {
     // private ClientGame clientGame;
-    private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
+    // private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
-    public Control control = new Control(this);
+    public Player player;
+    public Control control;
     private List<JButton> playerTileButtons;
     private List<JButton> discardedTileButtons; // Buttons for discarded tiles
     private List<JButton> rightPlayerDiscardedTileButtons;
@@ -38,6 +39,9 @@ class GamePanel extends JPanel {
     static final int TABLE_HEIGHT = 675;
     static final int TABLE_START_X_POS = 62;
     static final int TABLE_START_Y_POS = 46;
+    //public Player player;
+    
+
 
     private int hoverTileIndex = -1;
     private int selectedTileIndex = -1;
@@ -54,7 +58,7 @@ class GamePanel extends JPanel {
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
     public static void main(String[] args){
-        Tile tile1 = new Tile("Wong", 1);
+        /*Tile tile1 = new Tile("Wong", 1);
         Tile tile2 = new Tile("Wong", 1);
         Tile tile3 = new Tile("Wong", 1);
         Tile tile4 = new Tile("Wong", 3);
@@ -83,14 +87,52 @@ class GamePanel extends JPanel {
         handTiles.add(tile11);
         handTiles.add(tile12);
         handTiles.add(tile13);
-
+        this.player = new Player(handTiles, 1);
         Tile determineTile = new Tile("Wong", 7);
-        Player player = new Player(handTiles, 1);
-        player.getActionSet().setChosenAction(Action.MAHJONG);
-        System.out.println(player.getActionSet().getChosenAction());
-        System.out.println(player.getActionSet().getAvaliableAcitons());
+        Player player = new Player(handTiles, 1);*/
+        GamePanel gamepanel = new GamePanel();
+        gamepanel.player.getActionSet().setChosenAction(Action.MAHJONG);
+        System.out.println(gamepanel.player.getActionSet().getChosenAction());
+        System.out.println(gamepanel.player.getActionSet().getAvaliableAcitons());
+        for(Tile tile:gamepanel.player.getHandTiles()){
+            System.out.println(tile.suit+tile.rank);
+        }
     }
+
     public GamePanel() {
+        //接下來我要新增手牌
+        Tile tile1 = new Tile("East", 1);
+        Tile tile2 = new Tile("Red", 1);
+        Tile tile3 = new Tile("White Dragon", 1);
+        Tile tile4 = new Tile("Wong", 3);
+        Tile tile5 = new Tile("Wong", 3);
+        Tile tile6 = new Tile("Wong", 3);
+        Tile tile7 = new Tile("Wong", 4);
+        Tile tile8 = new Tile("Wong", 4);
+        Tile tile9 = new Tile("Wong", 4);
+        Tile tile10 = new Tile("Wong", 5);
+        Tile tile11 = new Tile("Wong", 5);
+        Tile tile12 = new Tile("Wong", 5);
+        Tile tile13 = new Tile("Wong", 7);
+
+        // 將這些牌添加到玩家的手牌中
+        ArrayList<Tile> handTiles = new ArrayList<>();
+        handTiles.add(tile1);
+        handTiles.add(tile2);
+        handTiles.add(tile3);
+        handTiles.add(tile4);
+        handTiles.add(tile5);
+        handTiles.add(tile6);
+        handTiles.add(tile7);
+        handTiles.add(tile8);
+        handTiles.add(tile9);
+        handTiles.add(tile10);
+        handTiles.add(tile11);
+        handTiles.add(tile12);
+        handTiles.add(tile13);
+        this.player = new Player(handTiles, 1);
+        //這不就新增完了嗎
+        control = new Control(this);
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // Deep green background to simulate a Mahjong table
@@ -111,7 +153,7 @@ class GamePanel extends JPanel {
 
         initializeTilesLeftButton();
         loadTileImages();
-        simulateDrawTile();
+        // simulateDrawTile();
         initializePlayerTileButtons();
   
     }
@@ -119,8 +161,10 @@ class GamePanel extends JPanel {
     private void initializePlayerTileButtons() {
         int x = 130;
         int y = 650;
-        for (int i = 0; i < playerTiles.size(); i++) {
-            JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+        for (int i = 0; i < player.getHandTiles().size(); i++) {
+            //JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+            // String key=player.getHandTiles().get(i).getRank()+player.getHandTiles().get(i).getSuit();
+            JButton tileButton = createTileButton(player.getHandTiles().get(i), x + i * 38, y);
             playerTileButtons.add(tileButton);
             add(tileButton);
         }
@@ -150,8 +194,9 @@ class GamePanel extends JPanel {
     }
     
     
-    private JButton createTileButton(String tile, int x, int y) {
-        ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
+    private JButton createTileButton(Tile tile, int x, int y) {
+        String key = tile.rank + tile.suit;
+        ImageIcon originalIcon = new ImageIcon(tileImages.get(key));
         Image scaledImage = originalIcon.getImage().getScaledInstance(40, 56, Image.SCALE_SMOOTH);
         ImageIcon scaledIcon = new ImageIcon(scaledImage);
         
@@ -176,14 +221,14 @@ class GamePanel extends JPanel {
         return tileButton;
     }
 
-    private void handleTileClick(String tile) {
-        discardedTiles.add(tile);
-        playerTiles.remove(tile);
-        simulateDrawTile(); // Simulate drawing a new tile
+    private void handleTileClick(Tile tile) {
+        // discardedTiles.add(tile);
+        player.getHandTiles().remove(tile);
+        // simulateDrawTile(); // Simulate drawing a new tile
         updatePlayerTileButtons();
         updateDiscardedTileButtons();
         repaint();
-        simulateOtherPlayersDiscard(tile);
+        // simulateOtherPlayersDiscard(tile);
         updateEatenTileButtons();
     }
 
@@ -195,12 +240,13 @@ class GamePanel extends JPanel {
 
         int x = 130;
         int y = 650;
-        for (int i = 0; i < playerTiles.size(); i++) {
-            JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+        for (int i = 0; i < player.getHandTiles().size(); i++) {
+            //JButton tileButton = createTileButton(playerTiles.get(i), x + i * 38, y);
+            // String key=player.getHandTiles().get(i).getRank()+player.getHandTiles().get(i).getSuit();
+            JButton tileButton = createTileButton(player.getHandTiles().get(i), x + i * 38, y);
             playerTileButtons.add(tileButton);
             add(tileButton);
         }
-
         revalidate();
         repaint();
     }
@@ -228,6 +274,7 @@ class GamePanel extends JPanel {
 
     private void initializeEatenTileButtons() {
         // Initialize eaten tiles for player
+        
         int x = TABLE_START_X_POS + TABLE_WIDTH;
         int y = TABLE_START_Y_POS + TABLE_HEIGHT - TILE_HEIGHT;
         for (int i = 0; i < eatenTiles.length; i++) {
@@ -422,6 +469,17 @@ class GamePanel extends JPanel {
                 }
             }
         }
+        String[] WordSuit = {"East","South","West","North","Red","Green","White Dragon"};
+        for (String suit : WordSuit){
+            String tileName = "1"+suit;
+            String resourcePath = "./resource/" + tileName + ".png";
+            URL resource = getClass().getResource(resourcePath);
+            if (resource != null) {
+                tileImages.put(tileName, new ImageIcon(resource).getImage());
+            } else {
+                System.err.println("Image not found: " + resourcePath);
+            }
+        }
     }
 
     // Helper class for rotating icons
@@ -552,19 +610,19 @@ class GamePanel extends JPanel {
         timer.start();
     }
 
-private void updateTilesLeftButton() {
-    totalTilesLeft--;  // Decrement the number of tiles left
-    tilesLeftButton.setText(String.valueOf(totalTilesLeft));
-    repaint();
-}
-
-private void simulateDrawTile() {
-    // Simulate drawing a new tile from the backend
-    String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
-    Random rand = new Random();
-    String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
-    playerTiles.add(newTile);
-    updateTilesLeftButton();  // Update the button text
-}
-
+    private void updateTilesLeftButton() {
+        totalTilesLeft--;  // Decrement the number of tiles left
+        tilesLeftButton.setText(String.valueOf(totalTilesLeft));
+        repaint();
+    }
+/*
+    private void simulateDrawTile() {
+        // Simulate drawing a new tile from the backend
+        String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
+        Random rand = new Random();
+        String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
+        playerTiles.add(newTile);
+        updateTilesLeftButton();  // Update the button text
+    }
+*/
 }

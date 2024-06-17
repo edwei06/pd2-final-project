@@ -10,19 +10,32 @@ import mahjong.main.game.action.ActionSet;
 public class Player {
     private ArrayList<Tile> handTiles; //手牌
     private ActionSet actionSet; //動作指令(吃、碰、槓、胡)
-    private ArrayList<Tile[]> eatenTiles; //吃碰槓牌堆
+    private TreeMap<Integer ,ArrayList<Tile[]>> eatenTiles; //吃碰槓牌堆
+    private ArrayList<Tile[]> eatenTileArray;
     private Tile discardTile; //要丟的牌
     private Tile tileDrawn; //抽到的牌
     private int playerId;
     public TreeMap<Integer,ArrayList<Tile>> discardedTiles;
 
     public Player(ArrayList<Tile> tiles, int playerId){
-        this.eatenTiles = new ArrayList<Tile[]>();
+        this.eatenTiles = new TreeMap<>();
+        this.eatenTileArray = new ArrayList<>();
         this.actionSet = new ActionSet();
         this.handTiles = tiles;
         this.playerId = playerId;
         this.discardedTiles=new TreeMap<>();
     }
+    //用來回傳此玩家的Priority
+    public int getPriority(){
+        Action chosenAction = actionSet.getChosenAction();
+        if(chosenAction.equals(Action.DISCARD)) return 1;
+        else if(chosenAction.toString().contains("CHOW")) return 2;
+        else if (chosenAction.equals(Action.PONG)) return 3;
+        else if(chosenAction.equals(Action.KONG)) return 4;
+        else if (chosenAction.equals(Action.MAHJONG)) return 5;
+        else return 0;
+    }
+    //這是用來判斷打牌之後人家要不要的
     public void drawFromOther(Tile tile,int discardedPlayerID){
         boolean Kong=ActionLogic.canKong(handTiles, tile);
         boolean Win=ActionLogic.canWin(handTiles, tile);
@@ -54,6 +67,7 @@ public class Player {
             actionSet.avaliableActions.add(Action.UPPERCHOW);
         }
     }
+
     public void drawTile(Tile tile){
         //判斷tile跟handTile的關係 ex. canKONG canMAJONG
         // 修改Player的ActionSet
@@ -77,7 +91,7 @@ public class Player {
             handTiles.add(tileDrawn);
             handTiles.remove(discardTile);
         }
-        if (actionSet.getChosenAction()==Action.KONG) {
+        else if (actionSet.getChosenAction()==Action.KONG) {
             Tile[] tileArray = new Tile[4];
             tileArray[0]=tileDrawn;
             tileArray[1]=tileDrawn;
@@ -86,9 +100,11 @@ public class Player {
             for(int i=0; i<3;i++){
                handTiles.remove(tileDrawn); 
             }
-            eatenTiles.add(tileArray);
+
+            eatenTileArray.add(tileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);           
         }
-        if (actionSet.getChosenAction()==Action.PONG) {
+        else if (actionSet.getChosenAction()==Action.PONG) {
             Tile[] tileArray = new Tile[4];
             tileArray[0]=tileDrawn;
             tileArray[1]=tileDrawn;
@@ -96,10 +112,13 @@ public class Player {
             for(int i=0; i<2;i++){
                handTiles.remove(tileDrawn); 
             }
-            eatenTiles.add(tileArray);
+            eatenTileArray.add(tileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);
+            actionSet.getAvaliableAcitons().clear();
+            actionSet.getAvaliableAcitons().add(Action.DISCARD);
         }
 
-        if (actionSet.getChosenAction()==Action.LOWWERCHOW) {
+        else if (actionSet.getChosenAction()==Action.LOWWERCHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-2);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-1);
@@ -109,9 +128,10 @@ public class Player {
             //移除手牌
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
-            eatenTiles.add(tileArray);
+            eatenTileArray.add(tileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);
         }
-        if (actionSet.getChosenAction()==Action.MIIDLECHOW) {
+        else if (actionSet.getChosenAction()==Action.MIIDLECHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()-1);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+1);
@@ -121,9 +141,10 @@ public class Player {
             //移除手牌
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
-            eatenTiles.add(tileArray);
+            eatenTileArray.add(tileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);
         }
-        if (actionSet.getChosenAction()==Action.UPPERCHOW) {
+        else if (actionSet.getChosenAction()==Action.UPPERCHOW) {
             Tile[] tileArray = new Tile[4];
             Tile tilelow = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+1);
             Tile tileup = new Tile(tileDrawn.getSuit(),tileDrawn.getRank()+2);
@@ -133,12 +154,14 @@ public class Player {
             //移除手牌
             handTiles.remove(tilelow);
             handTiles.remove(tileup);
-            eatenTiles.add(tileArray);
+            eatenTileArray.add(tileArray);
+            eatenTiles.put(getPlayerId(),eatenTileArray);
         }
     }
 
     public void addEatenTiles(Tile[] eatenTiles){
-        this.eatenTiles.add(eatenTiles);
+        this.eatenTileArray.add(eatenTiles);
+        this.eatenTiles.put(getPlayerId(),eatenTileArray);
     }
 
     public void addAction(Action action){
@@ -209,8 +232,22 @@ public class Player {
         handTiles.add(tile13);
 
         // 創建玩家
-        //Player player0 = new Player(handTiles, 0);
-        
+        //Player player = new Player(handTiles, 0);
+        //測試getPriority方法
+
+        /*player.getActionSet().setChosenAction(Action.DISCARD);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.LOWWERCHOW);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.MIIDLECHOW);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.PONG);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.KONG);
+        System.out.println(player.getPriority());
+        player.getActionSet().setChosenAction(Action.MAHJONG);
+        System.out.println(player.getPriority());
+        */
         //測試drawFromOther方法
         /* 
         Player player0 = new Player(handTiles, 0);
@@ -247,18 +284,20 @@ public class Player {
             }
         }*/
         //測試updateHandTile中的槓牌
-        /*player.actionSet.chosenAction=Action.KONG;
+        /* 
+        player.actionSet.chosenAction=Action.KONG;
         player.tileDrawn =new Tile("Wong", 5);
         player.updateHandTile();
         for(Tile tile : handTiles){
             System.out.println(tile.suit+tile.rank);
         }
         System.out.println("@@@@@@@@@@");
-        for(Tile tile : player.eatenTiles.get(0)){
+        for(Tile tile : player.eatenTiles.get(player.getPlayerId()).get(0)){
             if (tile != null) {
                 System.out.println(tile.suit + tile.rank);
             }
-        }*/
+        }
+        */
         //測試updateHandTile中的碰牌
         /*player.actionSet.chosenAction=Action.PONG;
         player.tileDrawn =new Tile("Wong", 5);
@@ -267,11 +306,12 @@ public class Player {
             System.out.println(tile.suit+tile.rank);
         }
         System.out.println("@@@@@@@@@@");
-        for(Tile tile : player.eatenTiles.get(0)){
+        for(Tile tile : player.eatenTiles.get(0).get(0)){
             if (tile != null) {
                 System.out.println(tile.suit + tile.rank);
             }
-        }*/
+        }
+        System.out.println(player.actionSet.getAvaliableAcitons().get(0));*/
         //測試updateHandTile中的lowwerchow
         /*player.actionSet.chosenAction=Action.LOWWERCHOW;
         player.tileDrawn =new Tile("Wong", 6);

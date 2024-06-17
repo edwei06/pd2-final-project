@@ -13,7 +13,7 @@ class Control {
 
     public Control(GamePanel gamePanel) {
         this.gamePanel = gamePanel;
-        this.actionSet = actionSet;
+        this.actionSet = gamePanel.player.getActionSet();
         initButton();
     }
 
@@ -44,6 +44,7 @@ class Control {
             @Override
             public void actionPerformed(ActionEvent e) {
                 hideAllButtons();
+                System.out.println(gamePanel.player.getActionSet().getChosenAction());
                 if (action != null) {
                     actionSet.setChosenAction(action);
                     System.out.println(action + " 按鈕被點擊並設置為選擇的動作");
