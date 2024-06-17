@@ -11,14 +11,15 @@ import mahjong.main.game.player.Tile;
  * 負責排組的邏輯運算
  */
 public class ServerGame {
-    private int NowPlayer = 0;
+    private int nowPlayer = 0;
     public ArrayList<Tile> tiles;
     private TreeMap<Integer, Player> players;
     private int maxPriority;
     public Player actPlayer;
     private TreeMap<Integer, ArrayList<Tile>> initialTileHands;
+    boolean closeGame = false;
 
-    private void initDistributeTileHands(){
+    public void initDistributeTileHands(){
         this.tiles = initTiles();
         for(int playerId =0; playerId<4; playerId++){
             ArrayList<Tile> tempTile = new ArrayList<Tile>();
@@ -65,8 +66,52 @@ public class ServerGame {
         return playerId;
     }
 
-    public void updateActionSet(int playerId, Player player){
-        
+    public void updateActionSet(int playerId, Player updatePlayer){
+        players.put(playerId, updatePlayer);
+    }
+
+    public void init(){
+        players.get(nowPlayer).drawTile(draw());
+    }
+
+    public void updateServerGame(){
+        this.maxPriority = 0;
+        actPlayer = null;
+        //知道主要動作的玩家
+        for(Player player : players.values()){
+            int playerPriority = player.getPriority();
+            if(maxPriority < playerPriority){
+                maxPriority = playerPriority;
+                actPlayer = player;
+            }
+        }
+
+        if(maxPriority == 0) { //無人需要操作
+            players.get(nowPlayer).drawTile(draw());
+        }else if(maxPriority == 1){ // 有人要打牌(打牌時只會有一個人有動作)
+            for(Player player : players.values()){
+                // 更新其他玩家的avaliableActions及drawnTile
+                if(player.equals(actPlayer)) continue;
+                player.drawFromOther(actPlayer.getDiscardTile(), nowPlayer);
+            }
+            nowPlayer ++;
+        }else{ // 吃、碰、槓、胡才要處理其他玩家的資訊
+            for(Player player : players.values()){
+                if(player.equals(actPlayer)) continue;
+                player.setTileDrawn(null);
+            }
+            if(maxPriority == 4){ //槓牌要抽一張
+                actPlayer.drawTile(draw());
+            }else if(maxPriority == 5){
+                closeGame = true;
+            }
+            nowPlayer = actPlayer.getPlayerId();
+        }
+        actPlayer.updateHandTile();
+    }
+
+    public boolean getCloseGame(){
+        return closeGame;
     }
     public static void main(String[] args){
         ServerGame serverGame =new ServerGame();

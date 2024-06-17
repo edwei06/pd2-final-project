@@ -24,6 +24,7 @@ public class ClientHandler implements Runnable{
     private final Socket clientSocket;
     private ObjectOutputStream outputStream;
     private ObjectInputStream inputStream;
+    public boolean replied;
 
     public int getClientId(){
         return clientId;
@@ -65,7 +66,8 @@ public class ClientHandler implements Runnable{
         while (isRunning) {
             try{
             final ClientPacket pocket= (ClientPacket) inputStream.readObject();
-            server.processPacket(this, pocket);
+                server.processPacket(this, pocket);
+                replied = true;
             } catch (final IOException e){
                 e.printStackTrace();
             } catch (final ClassNotFoundException e){
@@ -80,6 +82,7 @@ public class ClientHandler implements Runnable{
             server.closeServer();
         }
         try{
+            replied = false;
             outputStream.writeObject(player);
             outputStream.reset();
         }catch (final IOException e){

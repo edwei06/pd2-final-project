@@ -25,7 +25,7 @@ public class Player {
         this.playerId = playerId;
         this.discardedTiles=new TreeMap<>();
     }
-    //這是涂輪輪用來回傳Priority的
+    //用來回傳此玩家的Priority
     public int getPriority(){
         Action chosenAction = actionSet.getChosenAction();
         if(chosenAction.equals(Action.DISCARD)) return 1;
@@ -67,6 +67,7 @@ public class Player {
             actionSet.avaliableActions.add(Action.UPPERCHOW);
         }
     }
+
     public void drawTile(Tile tile){
         //判斷tile跟handTile的關係 ex. canKONG canMAJONG
         // 修改Player的ActionSet

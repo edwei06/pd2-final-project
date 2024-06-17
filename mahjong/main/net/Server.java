@@ -41,6 +41,7 @@ public class Server implements Runnable{
 
     @Override
     public void run() {
+        game.initDistributeTileHands();
         new Thread(() -> acceptClientLoop()).start();
     }
 
@@ -71,8 +72,11 @@ public class Server implements Runnable{
     }
 
     public void startGameLoop(){
-        // TODO :實作或呼叫tick() 讓他進行資訊更新
-        
+        sendUpdatesToAll();
+        game.updateServerGame();
+        if(game.getCloseGame()){
+            closeServer();
+        }
     }
 
     public void processPacket(final ClientHandler clientHandler, final ClientPacket packet){
@@ -92,6 +96,8 @@ public class Server implements Runnable{
     public void sendUpdatesToAll(){
         for(ClientHandler clientHandler : clientHandlers){
             sendUpdates(clientHandler);
+            // wait client reply packet
+            while(!clientHandler.replied);
         }
     }
 
