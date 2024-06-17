@@ -1,6 +1,7 @@
 package mahjong.main.net;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -32,6 +33,8 @@ public class Server implements Runnable{
         this.game = game;
         try{
             this.serverSocket = new ServerSocket(port);
+            System.out.println("Server is open!!");
+            System.out.println("ip is :" + InetAddress.getLocalHost().getHostAddress() + " , port is :" + port);
         }catch(IOException e){
             e.printStackTrace();
         }
@@ -50,19 +53,28 @@ public class Server implements Runnable{
         while (true) {
             System.out.println("Waiting for client...");
             try {
-                Socket clienSocket = serverSocket.accept();
+                Socket clientSocket = this.serverSocket.accept();
                 System.out.println("A new client is connected.");
                 //傳入clientSocket, this sever,gmae的東西 ... 
                 connetingClientNumber = game.spawnPlayer(connetingClientNumber);
-                ClientHandler clientHandler = new ClientHandler(clienSocket, this, connetingClientNumber++ );
+
+                ClientHandler clientHandler = new ClientHandler(clientSocket, this, connetingClientNumber-1 );
+                 
                 clientHandlers.add(clientHandler);
-                new Thread(clientHandler).start();;
-                
+                new Thread(clientHandler).start();
+                // while(!clientHandler.replied){
+                //     System.out.println(clientHandler.replied);
+                // };
+                System.out.println("connetingClientNumber :" +connetingClientNumber);
                 if(connetingClientNumber >= 4){
                     if(!gameStarting){
-                        new Thread(() -> startGameLoop());
+                        System.out.println("Start Game!");
+                        game.init();
+                        new Thread(() -> startGameLoop()).start();
+                        gameStarting = true;
                     }
                 }
+                
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -72,6 +84,11 @@ public class Server implements Runnable{
     }
 
     public void startGameLoop(){
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         sendUpdatesToAll();
         game.updateServerGame();
         if(game.getCloseGame()){
@@ -112,5 +129,10 @@ public class Server implements Runnable{
         }catch(final IOException e){
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        Server server = new Server(new ServerGame(), 1234);
+        server.run();
     }
 }

@@ -1,8 +1,9 @@
 package mahjong.main.game.action;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class ActionSet {
+public class ActionSet implements Serializable{
     public ArrayList<Action> avaliableActions = new ArrayList<Action>(); //能夠做的指令
     public Action chosenAction; //選擇要做的指令
     

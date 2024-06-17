@@ -49,6 +49,7 @@ public class ClientHandler implements Runnable{
     private void initialClientCommunication(){
         try{
             outputStream.writeInt(clientId); //讓client知道他的id
+            
             server.sendUpdates(this); //讓client能有server上的player資料
         }catch(IOException e){
             e.printStackTrace();
@@ -65,7 +66,7 @@ public class ClientHandler implements Runnable{
     private void startRecieveMessageLoop(){
         while (isRunning) {
             try{
-            final ClientPacket pocket= (ClientPacket) inputStream.readObject();
+                final ClientPacket pocket= (ClientPacket) inputStream.readObject();
                 server.processPacket(this, pocket);
                 replied = true;
             } catch (final IOException e){
@@ -78,9 +79,6 @@ public class ClientHandler implements Runnable{
 
     // server to client 傳遞 Player
     public void sendUpdate(Player player){
-        if(!isRunning){
-            server.closeServer();
-        }
         try{
             replied = false;
             outputStream.writeObject(player);

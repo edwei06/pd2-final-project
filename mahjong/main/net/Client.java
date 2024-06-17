@@ -5,6 +5,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.SocketException;
+import java.util.Scanner;
 import java.util.TreeMap;
 
 import mahjong.main.game.ClientGame;
@@ -19,13 +20,13 @@ public class Client implements Runnable{
     private ObjectInputStream inputStream;
     private ObjectOutputStream outputStream;
     private ClientGame game;
-    private final GameMainFrame mainFrame;
+    //private final GameMainFrame mainFrame;
 
     public ClientGame getGame(){
         return game;
     }
 
-    public Client(final GameMainFrame mainFrame, final String ipAddress, final int port){
+    public Client(/*final GameMainFrame mainFrame,*/ final String ipAddress, final int port){
         try {
             this.socket = new Socket(ipAddress, port);
             this.inputStream = new ObjectInputStream(socket.getInputStream());
@@ -33,17 +34,21 @@ public class Client implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        this.mainFrame = mainFrame;
-
+        //this.mainFrame = mainFrame;
+        try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         initialServerCommunication();
     }
 
     private void initialServerCommunication(){
         try {
             final int clientId = inputStream.readInt();
+            System.out.println("id :" + clientId);
             game = new ClientGame(this, clientId);
-
-            game.processPlayer(((Player) inputStream.readObject()));
+            game.processPlayer(((Player) this.inputStream.readObject()), true);
 
             System.out.println("Finished initial server communication.");
         } catch (final IOException e) {
@@ -63,7 +68,7 @@ public class Client implements Runnable{
         while(isRunning){
             try{
                 //read
-                game.processPlayer((Player) inputStream.readObject());
+                game.processPlayer((Player) inputStream.readObject(), false);
                 game.getActionSet().avaliableActionsClaer();
                 //TODO : 更新畫面
 
@@ -82,11 +87,23 @@ public class Client implements Runnable{
 
     private void sendPacket(ClientPacket packet){
         try {
+            System.out.println("update to server");
             outputStream.writeObject(packet);
+
             outputStream.reset();
         } catch (final IOException e) {
             e.printStackTrace();
         }
     }
-
+    public static void main(String[] args) {
+        //Scanner scanner = new Scanner(System.in);
+        System.out.println("input server ip :");
+        //String ip = scanner.nextLine();
+        System.out.println("input server port :");
+        //int port = Integer.parseInt(scanner.nextLine());
+        Client client = new Client("192.168.208.106", 1234);
+        
+        client.run();
+        //scanner.close();
+    }
 }
