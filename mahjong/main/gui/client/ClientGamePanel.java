@@ -1,3 +1,4 @@
+package mahjong.main.gui.client;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,10 +11,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
-// import mahjong.main.game.ClientGame;
+import mahjong.main.game.ClientGame;
 
-class GamePanel extends JPanel {
-    // private ClientGame clientGame;
+public class ClientGamePanel extends JPanel {
+    private ClientGame game;
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
@@ -44,13 +45,11 @@ class GamePanel extends JPanel {
     private List<String> rightPlayerDiscardedTiles;
     private List<String> topPlayerDiscardedTiles;
     private List<String> leftPlayerDiscardedTiles;
-    private JButton tilesLeftButton;
-    private int totalTilesLeft = 144;  // Example initial count, adjust as necessary
-
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
 
-    public GamePanel() {
+    public ClientGamePanel(ClientGame game) {
+        this.game = game;
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // Deep green background to simulate a Mahjong table
@@ -69,7 +68,6 @@ class GamePanel extends JPanel {
         topPlayerEatenTileButtons = new ArrayList<>();
         leftPlayerEatenTileButtons = new ArrayList<>();    
 
-        initializeTilesLeftButton();
         loadTileImages();
         simulateDrawTile();
         initializePlayerTileButtons();
@@ -85,30 +83,6 @@ class GamePanel extends JPanel {
             add(tileButton);
         }
     }
-
-    private void initializeTilesLeftButton() {
-        tilesLeftButton = new JButton(String.valueOf(totalTilesLeft));
-        tilesLeftButton.setBounds(430, 300, 80, 80);  // Position it in the middle and make it a circle
-        tilesLeftButton.setFocusPainted(false);
-        tilesLeftButton.setContentAreaFilled(false);
-        tilesLeftButton.setBorderPainted(false);
-        tilesLeftButton.setOpaque(true);
-        tilesLeftButton.setBackground(Color.BLACK);
-        tilesLeftButton.setForeground(Color.WHITE);
-        tilesLeftButton.setFont(new Font("Arial", Font.BOLD, 24));
-    
-        // Make the button circular
-        tilesLeftButton.setPreferredSize(new Dimension(100, 100));
-        tilesLeftButton.setMaximumSize(new Dimension(100, 100));
-        tilesLeftButton.setMinimumSize(new Dimension(100, 100));
-        tilesLeftButton.setHorizontalAlignment(SwingConstants.CENTER);
-        tilesLeftButton.setVerticalAlignment(SwingConstants.CENTER);
-    
-        tilesLeftButton.setEnabled(false);  // Make the button non-interactive
-    
-        add(tilesLeftButton);
-    }
-    
     
     private JButton createTileButton(String tile, int x, int y) {
         ImageIcon originalIcon = new ImageIcon(tileImages.get(tile));
@@ -512,19 +486,13 @@ class GamePanel extends JPanel {
         timer.start();
     }
 
-private void updateTilesLeftButton() {
-    totalTilesLeft--;  // Decrement the number of tiles left
-    tilesLeftButton.setText(String.valueOf(totalTilesLeft));
-    repaint();
-}
 
-private void simulateDrawTile() {
-    // Simulate drawing a new tile from the backend
-    String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
-    Random rand = new Random();
-    String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
-    playerTiles.add(newTile);
-    updateTilesLeftButton();  // Update the button text
-}
+    private void simulateDrawTile() {
+        // Simulate drawing a new tile from the backend
+        String[] possibleTiles = {"1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao", "4Tiao"};
+        Random rand = new Random();
+        String newTile = possibleTiles[rand.nextInt(possibleTiles.length)];
+        playerTiles.add(newTile);
+    }
 
 }
