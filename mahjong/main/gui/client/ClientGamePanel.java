@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import javax.swing.*;
-// import mahjong.main.game.ClientGame;
+import mahjong.main.game.ClientGame;
 
 public class ClientGamePanel extends JPanel {
-    // private ClientGame clientGame;
+    private ClientGame Game;
     private List<String> playerTiles = new ArrayList<>(Arrays.asList("1Tong", "2Tong", "3Tong", "4Tong", "5Tong", "6Tong", "7Tong", "8Tong", "9Tong", "1Tiao", "2Tiao", "3Tiao"));
     private String[] eatenTiles = {"1Tong", "2Tong", "3Tong"}; // 示例吃牌
     public Control control = new Control(this);
@@ -52,7 +52,8 @@ public class ClientGamePanel extends JPanel {
 
     private Map<String, Image> tileImages; // 用于保存牌的图像
 
-    public ClientGamePanel() {
+    public ClientGamePanel(ClientGame Game) {
+        this.Game = Game;
         setLayout(null);
         setPreferredSize(new Dimension(1024, 768));
         setBackground(new Color(34, 139, 34));  // Deep green background to simulate a Mahjong table
