@@ -1,13 +1,13 @@
-package mahjong.main.net.pocket;
+package mahjong.main.net.packet;
 
 import mahjong.main.game.ClientGame;
 import mahjong.main.game.player.Player;
 
-public class PlayerPocket extends ClientPocket {
+public class PlayerPacket extends ClientPacket {
     private static final long serialVersionUID = -8731243900388342502L;
-    private Player player;
+    public Player player;
 
-    public PlayerPocket(ClientGame clientGame){
+    public PlayerPacket(ClientGame clientGame){
         this.player = clientGame.getPlayer();
     }
 }

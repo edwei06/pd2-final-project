@@ -6,7 +6,9 @@ import java.net.Socket;
 import java.util.ArrayList;
 
 import mahjong.main.game.ServerGame;
-import mahjong.main.net.pocket.ClientPocket;
+import mahjong.main.net.packet.ClientPacket;
+import mahjong.main.net.packet.DisconnetPacket;
+import mahjong.main.net.packet.PlayerPacket;
 
 /**
  * <p>
@@ -23,6 +25,8 @@ public class Server implements Runnable{
     private final ServerGame game;
     private ServerSocket serverSocket;
     private final ArrayList<ClientHandler> clientHandlers;
+    private int connetingClientNumber = 0;
+    private boolean gameStarting = false;
 
     public Server (ServerGame game , final int port){
         this.game = game;
@@ -38,7 +42,6 @@ public class Server implements Runnable{
     @Override
     public void run() {
         new Thread(() -> acceptClientLoop()).start();
-        new Thread(() -> startGameLoop()).start();
     }
 
     public void acceptClientLoop(){
@@ -48,11 +51,17 @@ public class Server implements Runnable{
             try {
                 Socket clienSocket = serverSocket.accept();
                 System.out.println("A new client is connected.");
-                // TODO : 讓clientHandler 處理這個clientSocket
                 //傳入clientSocket, this sever,gmae的東西 ... 
-                ClientHandler clientHandler = new ClientHandler();
+                connetingClientNumber = game.spawnPlayer(connetingClientNumber);
+                ClientHandler clientHandler = new ClientHandler(clienSocket, this, connetingClientNumber++ );
                 clientHandlers.add(clientHandler);
                 new Thread(clientHandler).start();;
+                
+                if(connetingClientNumber >= 4){
+                    if(!gameStarting){
+                        new Thread(() -> startGameLoop());
+                    }
+                }
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -63,10 +72,20 @@ public class Server implements Runnable{
 
     public void startGameLoop(){
         // TODO :實作或呼叫tick() 讓他進行資訊更新
+        
     }
 
-    public void processPacket(final ClientHandler clientHandler, final ClientPocket pocket){
-        // TODO :透過instanceof 判斷是哪種封包(指令or斷線) ， 用game來傳入封包
+    public void processPacket(final ClientHandler clientHandler, final ClientPacket packet){
+        if (packet instanceof final PlayerPacket playerPacket) {
+            game.updateActionSet(clientHandler.getClientId(), playerPacket.player);
+        } else if (packet instanceof DisconnetPacket) {
+            try {
+                serverSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
     }
 
     // server to all client
@@ -79,5 +98,13 @@ public class Server implements Runnable{
     // server to one client
     public void sendUpdates(ClientHandler clientHandler){
         clientHandler.sendUpdate(game.getPlayer(clientHandler.clientId));
+    }
+
+    public void closeServer(){
+        try{
+            serverSocket.close();
+        }catch(final IOException e){
+            e.printStackTrace();
+        }
     }
 }
