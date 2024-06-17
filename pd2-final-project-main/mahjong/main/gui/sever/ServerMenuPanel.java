@@ -22,7 +22,8 @@ public class ServerMenuPanel extends JPanel {
                     @Override
                     public void actionPerformed(final ActionEvent e) {
                         ((ServerMainFrame) ServerMenuPanel.this.getTopLevelAncestor())
-                                .startServer(Integer.parseInt(portNumber.getText()));
+                                .startServer(69);
+                        
                     }
                 });
             }

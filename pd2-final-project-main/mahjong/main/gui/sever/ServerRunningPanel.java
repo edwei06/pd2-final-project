@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 import mahjong.main.net.Server;
 
 public class ServerRunningPanel extends JPanel {
-    public ServerRunningPanel(final Server server) {
+    /*public void ServerRunningPanel2(final Server server) {
         try {
             add(new JLabel(
                     "Running. Port: " +
@@ -17,5 +17,13 @@ public class ServerRunningPanel extends JPanel {
         } catch (final UnknownHostException e) {
             e.printStackTrace();
         }
+    }*/
+    public ServerRunningPanel() {
+
+        add(new JLabel(
+                "Running. Port: " +
+                        "localPenis" +
+                        ". IP address: " +"6969"));
+        
     }
 }
