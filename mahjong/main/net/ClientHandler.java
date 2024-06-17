@@ -36,8 +36,8 @@ public class ClientHandler implements Runnable{
         this.clientId = playerId;
 
         try{
-            this.outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
-            this.inputStream = new ObjectInputStream(clientSocket.getInputStream());
+            this.outputStream = new ObjectOutputStream(this.clientSocket.getOutputStream());
+            this.inputStream = new ObjectInputStream(this.clientSocket.getInputStream());
         }catch(IOException  e){
             e.printStackTrace();
         }
